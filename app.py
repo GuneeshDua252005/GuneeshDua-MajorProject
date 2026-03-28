@@ -443,11 +443,17 @@ def load_recommender_stats() -> pd.DataFrame:
         return pd.read_csv(RL_STATS_FILE)
 
 
-def upsert_recommender_stats(item: dict[str, str], liked: bool | None = None, skipped: bool | None = None) -> None:
+def upsert_recommender_stats(
+    item: dict[str, str],
+    liked: bool | None = None,
+    skipped: bool | None = None,
+    increment_exposure: bool = True,
+) -> None:
     df = load_recommender_stats()
     item_id = item["id"]
     if item_id in df["ItemId"].values:
-        df.loc[df["ItemId"] == item_id, "Exposures"] += 1
+        if increment_exposure:
+            df.loc[df["ItemId"] == item_id, "Exposures"] += 1
         if liked:
             df.loc[df["ItemId"] == item_id, "Likes"] += 1
         if skipped:
@@ -457,7 +463,7 @@ def upsert_recommender_stats(item: dict[str, str], liked: bool | None = None, sk
         row = {
             "ItemId": item_id,
             "ItemUrl": item["url"],
-            "Exposures": 1,
+            "Exposures": 1 if increment_exposure else 0,
             "Likes": int(bool(liked)),
             "Skips": int(bool(skipped)),
             "LastRecommendedAt": now_utc_iso(),
@@ -841,16 +847,23 @@ def prepare_fer2013_csv(csv_path: Path, output_root: Path, max_rows: int = 12000
     return counts
 
 
+def csv_has_columns(csv_path: Path, required_columns: set[str]) -> bool:
+    try:
+        cols = set(pd.read_csv(csv_path, nrows=1).columns)
+        return required_columns.issubset(cols)
+    except Exception:
+        return False
+
+
 def auto_prepare_dataset(raw_root: Path, prepared_root: Path, fer_max_rows: int = 12000) -> tuple[bool, str]:
     ensure_clean_dir(prepared_root)
     candidate_root = infer_dataset_root(raw_root)
 
     # Case 1: FER-style CSV
-    csv_candidates = [
-        p
-        for p in candidate_root.rglob("*.csv")
-        if "fer" in p.name.lower() or {"emotion", "pixels"}.issubset(set(pd.read_csv(p, nrows=1).columns))
-    ]
+    csv_candidates: list[Path] = []
+    for p in candidate_root.rglob("*.csv"):
+        if "fer" in p.name.lower() or csv_has_columns(p, {"emotion", "pixels"}):
+            csv_candidates.append(p)
     for csv_path in csv_candidates:
         try:
             counts = prepare_fer2013_csv(csv_path, prepared_root, max_rows=fer_max_rows)
@@ -1407,12 +1420,12 @@ if st.button("🚀 Analyze & Recommend"):
     c1, c2 = st.columns(2)
     with c1:
         if st.button("👍 I liked this", key="liked_btn"):
-            upsert_recommender_stats(chosen_item, liked=True, skipped=False)
+            upsert_recommender_stats(chosen_item, liked=True, skipped=False, increment_exposure=False)
             update_last_feedback("liked")
             st.success("Preference updated.")
     with c2:
         if st.button("👎 Skip", key="skip_btn"):
-            upsert_recommender_stats(chosen_item, liked=False, skipped=True)
+            upsert_recommender_stats(chosen_item, liked=False, skipped=True, increment_exposure=False)
             update_last_feedback("skipped")
             st.info("Skip logged.")
 
