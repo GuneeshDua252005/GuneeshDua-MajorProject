@@ -1065,14 +1065,16 @@ def detect_dataset_columns(example: dict[str, Any], features: Any = None) -> tup
         "target",
         "sentiment",
         "cls",
+        "json",
     ]:
         if candidate in example and looks_like_label(example[candidate]):
             label_column = candidate
             break
-    if label_column is None and "annotations" in example and looks_like_annotation_label(example["annotations"]):
-        label_column = "annotations"
+    for candidate in ["annotations", "json"]:
+        if label_column is None and candidate in example and looks_like_annotation_label(example[candidate]):
+            label_column = candidate
     if label_column is None:
-        for candidate in ["annotations"]:
+        for candidate in ["annotations", "json"]:
             if candidate in example and looks_like_annotation_label(example[candidate]):
                 label_column = candidate
                 break
@@ -1141,10 +1143,47 @@ def parse_annotation_scores(value: Any) -> dict[str, float]:
     return scores
 
 
+def parse_emonet_json_label(value: Any) -> str | None:
+    if not isinstance(value, dict):
+        return None
+    metadata_items = value.get("metadata")
+    if not isinstance(metadata_items, list):
+        return None
+    scores: dict[str, float] = {}
+    for metadata in metadata_items:
+        if not isinstance(metadata, dict):
+            continue
+        predictions = metadata.get("predictions")
+        if not isinstance(predictions, dict):
+            continue
+        emotions = predictions.get("emotions")
+        if not isinstance(emotions, dict):
+            continue
+        for emotion_name, payload in emotions.items():
+            rating = None
+            if isinstance(payload, dict):
+                rating = payload.get("rating")
+            elif isinstance(payload, (int, float, np.number)):
+                rating = float(payload)
+            if not isinstance(rating, (int, float, np.number)):
+                continue
+            rating_value = float(rating)
+            if np.isnan(rating_value):
+                continue
+            scores[str(emotion_name)] = scores.get(str(emotion_name), 0.0) + rating_value
+    if not scores:
+        return None
+    return max(scores.items(), key=lambda item: item[1])[0]
+
+
 def label_name_from_value(value: Any, feature: Any = None, source_key: str | None = None) -> str | None:
     if value is None:
         return None
     label_map = DATASET_NUMERIC_LABEL_MAPS.get(source_key or "", {})
+    if source_key == "EmoNet-Face-Big":
+        parsed = parse_emonet_json_label(value)
+        if parsed:
+            return parsed
     if feature is not None and hasattr(feature, "names") and isinstance(value, (int, np.integer)):
         names = list(feature.names)
         index = int(value)
