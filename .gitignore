@@ -1,0 +1,14 @@
+__pycache__/
+.streamlit/
+.pytest_cache/
+
+dataset/
+models/
+
+cei_twin_log.csv
+recommender_stats.csv
+resource_catalog.csv
+
+*.pyc
+*.pyo
+*.pyd
