@@ -6,7 +6,7 @@ import os
 import random
 import textwrap
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -51,6 +51,7 @@ MODELS_DIR = ROOT_DIR / "models"
 CATALOG_CSV = ROOT_DIR / "resource_catalog.csv"
 TWIN_LOG_CSV = ROOT_DIR / "cei_twin_log.csv"
 RECOMMENDER_STATS_CSV = ROOT_DIR / "recommender_stats.csv"
+RL_MEMORY_JSON = ROOT_DIR / "rl_feedback_memory.json"
 MANIFEST_JSON = DATASET_DIR / "dataset_manifest.json"
 MODEL_FILE = MODELS_DIR / "mobile_transfer.keras"
 MODEL_META_FILE = MODELS_DIR / "mobile_transfer_metadata.json"
@@ -189,7 +190,7 @@ def ensure_project_dirs() -> None:
 
 
 def now_ts() -> str:
-    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
 def normalize_label(raw_label: str) -> str:
@@ -216,6 +217,57 @@ def append_csv(path: Path, row: Dict[str, Any], headers: List[str]) -> None:
         if not file_exists:
             writer.writeheader()
         writer.writerow(row)
+
+
+def load_rl_memory(path: Path = RL_MEMORY_JSON) -> Tuple[Dict[str, float], Dict[str, int]]:
+    if not path.exists():
+        return {}, {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        scores = {str(url): float(score) for url, score in payload.get("scores", {}).items()}
+        counts = {str(url): int(count) for url, count in payload.get("counts", {}).items()}
+        return scores, counts
+    except Exception:
+        return {}, {}
+
+
+def save_rl_memory(
+    scores: Dict[str, float],
+    counts: Dict[str, int],
+    path: Path = RL_MEMORY_JSON,
+) -> None:
+    payload = {
+        "timestamp": now_ts(),
+        "scores": scores,
+        "counts": counts,
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def update_reinforcement_scores(
+    urls: List[str],
+    reward: float,
+    rl_scores: Dict[str, float],
+    rl_counts: Dict[str, int],
+    base_learning_rate: float = 0.35,
+) -> List[Dict[str, Any]]:
+    updates: List[Dict[str, Any]] = []
+    for url in urls:
+        old_score = float(rl_scores.get(url, 0.0))
+        old_count = int(rl_counts.get(url, 0))
+        adaptive_lr = base_learning_rate / (1.0 + 0.1 * old_count)
+        new_score = old_score + adaptive_lr * (reward - old_score)
+        rl_scores[url] = round(float(new_score), 6)
+        rl_counts[url] = old_count + 1
+        updates.append(
+            {
+                "url": url,
+                "old_score": old_score,
+                "new_score": rl_scores[url],
+                "feedback_count": rl_counts[url],
+            }
+        )
+    return updates
 
 
 def detect_ethics_risk(text: str) -> Tuple[bool, str]:
@@ -436,6 +488,8 @@ def recommend_resources(
     mood: str,
     history_urls: set,
     top_k: int = 8,
+    rl_scores: Optional[Dict[str, float]] = None,
+    explore_ratio: float = 0.25,
 ) -> pd.DataFrame:
     if mood not in catalog["mood"].unique():
         mood = "neutral"
@@ -451,7 +505,31 @@ def recommend_resources(
     if sample_size <= 0:
         return mood_df.head(0)
 
-    recommended = unseen_df.sample(n=sample_size, random_state=random.randint(0, 100000))
+    if not rl_scores:
+        recommended = unseen_df.sample(n=sample_size, random_state=random.randint(0, 100000))
+        recommended["selection_mode"] = "random"
+    else:
+        ranked = unseen_df.copy()
+        ranked["rl_score"] = ranked["url"].map(lambda url: float(rl_scores.get(url, 0.0)))
+        ranked["selection_mode"] = "exploit"
+        exploit_target = max(1, int(round(sample_size * max(0.0, 1.0 - explore_ratio))))
+        exploit_target = min(exploit_target, len(ranked))
+        exploit_df = ranked.sort_values(
+            by=["rl_score", "title"],
+            ascending=[False, True],
+        ).head(exploit_target)
+
+        remaining = ranked[~ranked["url"].isin(exploit_df["url"])].copy()
+        remaining_slots = sample_size - len(exploit_df)
+        if remaining_slots > 0 and not remaining.empty:
+            explore_n = min(remaining_slots, len(remaining))
+            explore_df = remaining.sample(n=explore_n, random_state=random.randint(0, 100000))
+            explore_df["selection_mode"] = "explore"
+            recommended = pd.concat([exploit_df, explore_df], ignore_index=True)
+        else:
+            recommended = exploit_df
+        recommended = recommended.head(sample_size)
+
     for url in recommended["url"].tolist():
         history_urls.add(url)
     return recommended.reset_index(drop=True)
@@ -1103,6 +1181,10 @@ def render_confusion_matrix(cm: np.ndarray, class_names: List[str]) -> None:
 def init_state() -> None:
     if "history_urls" not in st.session_state:
         st.session_state.history_urls = set()
+    if "rl_scores" not in st.session_state or "rl_counts" not in st.session_state:
+        scores, counts = load_rl_memory()
+        st.session_state.rl_scores = scores
+        st.session_state.rl_counts = counts
     if "last_fused_emotion" not in st.session_state:
         st.session_state.last_fused_emotion = "neutral"
     if "last_fused_confidence" not in st.session_state:
@@ -1117,6 +1199,12 @@ def init_state() -> None:
         st.session_state.last_emoji_emotion = "neutral"
     if "last_text_emotion" not in st.session_state:
         st.session_state.last_text_emotion = "neutral"
+    if "last_recommended_urls" not in st.session_state:
+        st.session_state.last_recommended_urls = []
+    if "last_recommended_titles" not in st.session_state:
+        st.session_state.last_recommended_titles = []
+    if "last_recommended_mood" not in st.session_state:
+        st.session_state.last_recommended_mood = "neutral"
 
 
 def run_streamlit_app() -> None:
@@ -1368,11 +1456,17 @@ def run_streamlit_app() -> None:
                 mood=mood,
                 history_urls=st.session_state.history_urls,
                 top_k=top_k,
+                rl_scores=st.session_state.rl_scores,
             )
             if recommended_df.empty:
                 st.warning("No recommendations found.")
             else:
                 st.dataframe(recommended_df, use_container_width=True)
+                if "selection_mode" in recommended_df.columns:
+                    mode_counts = recommended_df["selection_mode"].value_counts().to_dict()
+                    st.caption(f"Selection mix: {mode_counts}")
+                if "rl_score" in recommended_df.columns:
+                    st.caption("Top reinforcement-scored items are prioritized while still exploring new items.")
                 st.markdown("#### Quick links")
                 for _, row in recommended_df.iterrows():
                     st.markdown(f"- [{row['title']}]({row['url']}) ({row['source']}, {row['type']})")
@@ -1400,6 +1494,35 @@ def run_streamlit_app() -> None:
                     unique_seen=len(st.session_state.history_urls),
                 )
                 st.success("Recommendations generated and logs updated.")
+
+        st.markdown("#### User feedback for adaptive learning (reinforcement update)")
+        feedback_score = st.slider(
+            "Rate recommendation relevance",
+            min_value=1,
+            max_value=5,
+            value=3,
+            help="1 = poor relevance, 5 = excellent relevance",
+        )
+        reward_value = (feedback_score - 3) / 2.0
+        if st.button("Apply Feedback to RL Memory"):
+            if "recommended_df" in locals() and not recommended_df.empty:
+                target_urls = recommended_df["url"].tolist()
+            else:
+                mood_df = catalog[catalog["mood"] == mood]
+                target_urls = mood_df.head(min(top_k, len(mood_df)))["url"].tolist()
+
+            if not target_urls:
+                st.warning("No recommendation URLs available to update.")
+            else:
+                updates = update_reinforcement_scores(
+                    urls=target_urls,
+                    reward=float(reward_value),
+                    rl_scores=st.session_state.rl_scores,
+                    rl_counts=st.session_state.rl_counts,
+                )
+                save_rl_memory(st.session_state.rl_scores, st.session_state.rl_counts)
+                st.success("Reinforcement memory updated.")
+                st.dataframe(pd.DataFrame(updates), use_container_width=True)
 
         st.markdown("#### Spotify live search (optional)")
         if st.button("Fetch Spotify Suggestions"):
