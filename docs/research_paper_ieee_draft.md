@@ -298,7 +298,7 @@ The project is implemented in Python and intended to run inside Visual Studio Co
 - `requirements.txt`  
 - `README.md`  
 - `.gitignore`  
-- `research_paper_ieee_draft.md`  
+- `docs/research_paper_ieee_draft.md`  
 
 At runtime, the following files/folders are created automatically:
 
