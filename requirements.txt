@@ -1,0 +1,10 @@
+streamlit
+numpy
+pandas
+pillow
+opencv-python-headless
+tensorflow
+scikit-learn
+spotipy
+openai
+datasets
