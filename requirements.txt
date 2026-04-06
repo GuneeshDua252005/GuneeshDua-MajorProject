@@ -1,0 +1,9 @@
+streamlit
+numpy
+tensorflow
+datasets
+huggingface_hub
+scikit-learn
+Pillow
+matplotlib
+SpeechRecognition
