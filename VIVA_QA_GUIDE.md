@@ -156,3 +156,70 @@ If quota limits occur, local fallback logic ensures continuity.
 - User usefulness feedback trends.
 - Ethical compliance behavior under uncertainty.
 
+---
+
+## 14. HOD / Examiner Deep Viva Questions (Detailed)
+
+### Q1. Explain end-to-end pipeline in sequence.
+1. User provides context (text, emoji, optional face image).
+2. System computes modality-wise emotion probabilities.
+3. Weighted fusion gives final mood distribution and confidence.
+4. Ethical monitor checks confidence and modality adequacy.
+5. System generates mindset-aware questions (HF/OpenAI/local).
+6. Recommendation strategy is selected.
+7. Resource links are shown (Spotify API or free link fallback).
+8. User feedback updates Q-table policy.
+9. Twin logs and stats logs are updated for audit and future adaptation.
+
+### Q2. Why should interviewers trust this model output?
+- Output is probability-based, not deterministic hard claim.
+- Confidence and risk flags are exposed to user/observer.
+- Grad-CAM reveals spatial decision basis for image inference.
+- System uses fallback-first behavior instead of silent failure.
+
+### Q3. Explain how this system avoids over-dependence on paid APIs.
+- Free-first strategy uses Hugging Face token-based inference.
+- If unavailable, local deterministic prompts are used.
+- Spotify recommendation is optional and degrades to open links.
+- Core model training/inference is local and independent.
+
+### Q4. What are key engineering decisions for 4 GB RAM machines?
+- Sample-limited dataset preparation (600-1200 images).
+- Small batch sizes (4 or 8) and short epochs (1-3).
+- Compact transfer-learning architecture with GAP.
+- Avoid unnecessary background services.
+
+### Q5. Why is this called "Adaptive Lifestyle System" and not only "Emotion Classifier"?
+- It not only predicts emotion but generates actions:
+  - reflective questioning,
+  - recommendation strategy,
+  - adaptive updates via feedback,
+  - ethical governance alerts.
+
+### Q6. How do you justify RL logic without deep RL complexity?
+- Problem is strategy adaptation, not long-horizon game control.
+- Q-table is sufficient, interpretable, and computationally cheap.
+- It demonstrates reinforcement concept practically for academic major project.
+
+### Q7. How does this close research gaps from 2023-2025 papers?
+- Combines multimodal fusion + explainability + ethics + adaptation in one app.
+- Adds practical deployment path and free API strategy.
+- Introduces structured Digital Emotional Twin logs for measurable adaptation.
+
+### Q8. What is the significance of ethical AI monitoring in this domain?
+- Emotional recommendations can influence user behavior significantly.
+- Wrong high-confidence suggestions can reduce trust or cause distress.
+- Risk flags and cautionary notes reduce unsafe automation behavior.
+
+### Q9. What future scope can produce publishable extension work?
+1. Add speech prosody and multilingual emotion understanding.
+2. Introduce fairness metrics and subgroup calibration reports.
+3. Use contextual bandits for safer adaptive policies.
+4. Add edge-device deployment and privacy-preserving personalization.
+
+### Q10. What are likely failure modes and mitigations?
+- Noisy user text -> mitigation: prompt follow-up questions.
+- Missing image input -> mitigation: partial modality handling + warning.
+- API outage -> mitigation: local fallback path.
+- Dataset imbalance -> mitigation: augmentation, class monitoring, fairness checks.
+

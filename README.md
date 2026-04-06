@@ -163,6 +163,9 @@ python app.py --export-catalog
 4. Copy token and set environment variable:
    - `HF_TOKEN` or `HUGGINGFACEHUB_API_TOKEN`
 5. Start app; mood-aware question generation will use HF inference API.
+6. In app sidebar:
+   - select provider = `huggingface` or `auto`
+   - click **Validate Hugging Face token**.
 
 Why Hugging Face here:
 - Easy token management.
@@ -256,6 +259,7 @@ Detailed IEEE-format draft content and viva guide are included in:
 
 - `RESEARCH_PAPER_IEEE_DRAFT.md`
 - `VIVA_QA_GUIDE.md`
+- `PAPER_DATA_EXTRACTION_TEMPLATE.md`
 
 These files cover:
 - Abstract, Introduction, Literature Review, Proposed Method, Results, Conclusion

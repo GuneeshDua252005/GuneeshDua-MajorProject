@@ -66,6 +66,10 @@ try:
     import tensorflow as tf
     from tensorflow.keras import Model
     from tensorflow.keras.applications import EfficientNetB0
+    try:
+        from tensorflow.keras.applications import EfficientNetV2B0
+    except Exception:
+        EfficientNetV2B0 = None
     from tensorflow.keras.layers import (
         Conv2D,
         Dense,
@@ -79,6 +83,7 @@ except Exception:
     tf = None
     Model = None
     EfficientNetB0 = None
+    EfficientNetV2B0 = None
     Conv2D = None
     Dense = None
     Dropout = None
@@ -281,6 +286,28 @@ def hf_headers() -> Dict[str, str]:
     return headers
 
 
+def validate_hf_token() -> Tuple[bool, str]:
+    """
+    Validates token by calling HF whoami endpoint.
+    """
+    token = os.getenv("HUGGINGFACEHUB_API_TOKEN", "").strip() or os.getenv("HF_TOKEN", "").strip()
+    if not token:
+        return False, "HF token not found. Set HF_TOKEN or HUGGINGFACEHUB_API_TOKEN."
+    try:
+        resp = requests.get(
+            "https://huggingface.co/api/whoami-v2",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=20,
+        )
+        if resp.status_code >= 400:
+            return False, f"HF token check failed ({resp.status_code})."
+        data = resp.json()
+        user = data.get("name") or data.get("email") or "authenticated_user"
+        return True, f"HF token is valid for user: {user}"
+    except Exception:
+        return False, "HF token validation request failed."
+
+
 def call_hf_chat(prompt: str, model_id: str = "HuggingFaceH4/zephyr-7b-beta", timeout: int = 45) -> str:
     """
     Free-tier capable HF Inference API call (depends on user token quota).
@@ -312,7 +339,58 @@ def call_hf_chat(prompt: str, model_id: str = "HuggingFaceH4/zephyr-7b-beta", ti
         return "HF API timeout/error. Using local fallback."
 
 
-def ask_mood_questions_with_free_api(mood: str, context: str) -> List[str]:
+def call_openai_chat(
+    prompt: str,
+    model: str = "gpt-4o-mini",
+    timeout: int = 45,
+) -> str:
+    """
+    Optional paid API path if OPENAI_API_KEY is configured.
+    Gracefully falls back when missing/unavailable.
+    """
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        return "OpenAI key missing. Using free/local fallback."
+    url = "https://api.openai.com/v1/chat/completions"
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are a supportive lifestyle coach."},
+            {"role": "user", "content": prompt},
+        ],
+        "temperature": 0.7,
+        "max_tokens": 220,
+    }
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=timeout)
+        if resp.status_code >= 400:
+            return f"OpenAI API unavailable ({resp.status_code}). Using free/local fallback."
+        data = resp.json()
+        return (
+            data.get("choices", [{}])[0]
+            .get("message", {})
+            .get("content", "")
+            .strip()
+        ) or "OpenAI empty response. Using free/local fallback."
+    except Exception:
+        return "OpenAI API timeout/error. Using free/local fallback."
+
+
+def parse_questions_output(raw_text: str) -> List[str]:
+    raw_lines = [x.strip(" -0123456789.)") for x in raw_text.splitlines() if x.strip()]
+    lines = [x for x in raw_lines if len(x) > 8][:5]
+    return lines
+
+
+def ask_mood_questions_with_provider(
+    mood: str,
+    context: str,
+    provider: str = "auto",
+) -> List[str]:
     prompt = textwrap.dedent(
         f"""
         You are a supportive lifestyle coach.
@@ -321,10 +399,29 @@ def ask_mood_questions_with_free_api(mood: str, context: str) -> List[str]:
         Generate 5 concise reflective questions that are practical, safe, and non-clinical.
         """
     ).strip()
-    output = call_hf_chat(prompt=prompt)
+
+    output = ""
+    p = provider.lower().strip()
+    if p == "openai":
+        output = call_openai_chat(prompt=prompt)
+        lines = parse_questions_output(output)
+        if lines:
+            return lines
+        output = call_hf_chat(prompt=prompt)
+    elif p == "huggingface":
+        output = call_hf_chat(prompt=prompt)
+    elif p == "local":
+        output = ""
+    else:
+        # auto: free-first strategy
+        output = call_hf_chat(prompt=prompt)
+        lines = parse_questions_output(output)
+        if lines:
+            return lines
+        output = call_openai_chat(prompt=prompt)
+
     if "fallback" not in output.lower() and len(output) > 20:
-        raw_lines = [x.strip(" -0123456789.)") for x in output.splitlines() if x.strip()]
-        lines = [x for x in raw_lines if len(x) > 8][:5]
+        lines = parse_questions_output(output)
         if lines:
             return lines
     return [
@@ -667,8 +764,9 @@ def build_cnn_gap_model(num_classes: int) -> "tf.keras.Model":
 
     inputs = Input(shape=(IMAGE_SIZE[0], IMAGE_SIZE[1], 3))
 
-    # Modern compact backbone + custom head for low-resource environment
-    base = EfficientNetB0(
+    # Prefer a newer EfficientNetV2 backbone; fallback to EfficientNetB0.
+    backbone_cls = EfficientNetV2B0 if EfficientNetV2B0 is not None else EfficientNetB0
+    base = backbone_cls(
         include_top=False,
         weights="imagenet",
         input_tensor=inputs,
@@ -946,7 +1044,16 @@ def run_streamlit_app() -> None:
             st.success(f"Exported {len(df)} catalog items to {RESOURCE_CSV.name}")
 
         st.markdown("---")
-        st.subheader("Free API setup")
+        st.subheader("API setup")
+        question_provider = st.selectbox(
+            "Question generation provider",
+            options=["auto", "huggingface", "openai", "local"],
+            index=0,
+            help=(
+                "auto = Hugging Face free-first with fallback, "
+                "openai = optional paid path, local = deterministic offline prompts."
+            ),
+        )
         st.write(
             "Set `HF_TOKEN` (or `HUGGINGFACEHUB_API_TOKEN`) in terminal for free-tier Hugging Face inference."
         )
@@ -955,6 +1062,12 @@ def run_streamlit_app() -> None:
             "$env:HF_TOKEN='your_token_here'  # PowerShell",
             language="bash",
         )
+        if st.button("Validate Hugging Face token"):
+            ok, msg = validate_hf_token()
+            if ok:
+                st.success(msg)
+            else:
+                st.warning(msg)
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         ["Emotion Fusion", "Dataset Prep", "Training + Eval", "Grad-CAM", "Research & Viva"]
@@ -999,7 +1112,11 @@ def run_streamlit_app() -> None:
             st.write("Fused mood distribution")
             st.json({k: round(v, 4) for k, v in sorted(fused.items(), key=lambda x: x[1], reverse=True)})
 
-            questions = ask_mood_questions_with_free_api(top_mood, text_context)
+            questions = ask_mood_questions_with_provider(
+                top_mood,
+                text_context,
+                provider=question_provider,
+            )
             st.markdown("#### Important reflective questions (mindset-aware)")
             for i, q in enumerate(questions, start=1):
                 st.write(f"{i}. {q}")
@@ -1069,7 +1186,10 @@ def run_streamlit_app() -> None:
 
     with tab3:
         section_header("CNN + GAP Training and Evaluation")
-        st.write("Upgraded architecture: EfficientNetB0 backbone + Conv layers + GAP + Dense softmax head.")
+        st.write(
+            "Upgraded architecture: EfficientNetV2B0 (fallback EfficientNetB0) "
+            "+ Conv refinement + GAP + Dense softmax head."
+        )
         epochs = st.slider("Epochs", 1, 5, 2)
         batch_size = st.selectbox("Batch size", [4, 8, 16], index=1)
         if st.button("Train and evaluate model"):

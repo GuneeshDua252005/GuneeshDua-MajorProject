@@ -92,6 +92,26 @@ This section summarizes representative studies relevant to emotion-aware recomme
 ### Literature Synthesis
 The review indicates that current systems often trade off between performance, interpretability, multimodality, and deployability. There remains a practical gap for a unified, explainable, ethically-aware, low-resource architecture that can be executed as a single-source educational and deployment-grade application.
 
+### Literature Extraction Table (for Step-2 requirement)
+
+| Ref | Year | Authors | Methodology | Dataset | Performance (reported) | Salient Features | Limitations | Summary |
+|---|---:|---|---|---|---|---|---|---|
+| [1] | 2024 | Kumar et al. | LSTM text emotion model + recommendation mapping | Text emotion corpus | ~89% emotion accuracy | Sequence context handling | No multimodal support | Strong baseline for text-only emotion-aware recommendation |
+| [2] | 2023 | Zhang et al. | BERT emotion classification | Contextual text benchmark | Better than classical ML | Deep contextual understanding | High computational cost | Demonstrates transformer benefits for sentiment nuance |
+| [3] | 2025 | Singh et al. | CNN visual emotion model + music engine | Facial/image emotion set | Improved relevance vs baseline | Visual affect cues | Limited NLP integration | Effective image-driven emotion recommendation |
+| [4] | 2023 | Chen et al. | RNN emotion model + collaborative filtering | Text + interaction data | Better than static sentiment methods | Hybrid recommendation logic | Context depth limitations | Hybrid approach improves personalization |
+| [5] | 2024 | Sharma et al. | Multimodal fusion (face+text) | Multimodal benchmark | Higher multimodal accuracy | Fusion robustness | Increased model complexity | Confirms multimodal benefit over single-modality |
+| [6] | 2025 | Lee et al. | Transformer emotion classification | Large text datasets | SOTA-style textual performance | Context and long-range semantics | Latency/resource heavy | High accuracy but lower practical deployability |
+| [7] | 2024 | Wang et al. | Hybrid emotion-aware recommender | Platform-scale logs | Accuracy lift vs non-emotion systems | Better user relevance | Scalability bottlenecks | Emotion integration improves recommendation quality |
+| [8] | 2023 | Patel et al. | Emotion-adaptive music therapy workflow | Therapeutic cohort dataset | Positive wellbeing outcomes | Health-oriented application | Manual annotation constraints | Demonstrates practical wellness impact |
+| [9] | 2024 | Garcia et al. | NLP sentiment-driven mood detection | User-generated text | Better than random/polarity-only | Lightweight deployment | Weak on sarcasm/context shifts | Practical low-cost sentiment baseline |
+| [10] | 2023 | Brown et al. | Classical ML/ensemble emotion detection | Social text benchmark | Ensemble > single ML models | Fast baseline framework | Inferior to deep contextual models | Strong classical comparison baseline |
+| [11] | 2025 | Li et al. | Audio+text multimodal emotion model | Audio-text affect corpus | Improved stability | Multi-signal resilience | Pipeline synchronization overhead | Better robustness through modality fusion |
+| [12] | 2024 | Ahmed et al. | Cold-start hybrid recommendation | Sparse new-user datasets | Better early-session relevance | Cold-start mitigation | Calibration sensitivity | Helps new users despite low history |
+| [13] | 2023 | Johnson et al. | Transformer-based recommender | User-item sequence datasets | Strong personalization metrics | Rich dependency modeling | Memory footprint | Accurate but expensive deployment |
+| [14] | 2025 | Kim et al. | LLM-assisted contextual recommendation | Conversational context data | Better context quality | Rich natural interaction | Cost/latency concerns | Improves semantic recommendation quality |
+| [15] | 2026 | Verma et al. | Hybrid transformer + emotion model | Multimodal recommendation corpus | Superior recommendation accuracy | Advanced fusion strategy | Infra-intensive training | High performance with complex stack |
+
 ---
 
 ## III. Proposed Methodology
@@ -154,6 +174,28 @@ Each interaction logs timestamp, mood distribution, confidence, selected strateg
 7. Feedback capture -> RL update  
 8. Twin log + stats log update
 
+### J. Algorithmic Steps
+**Algorithm 1: Multimodal Mood Inference**
+1. Input text \(T\), emoji \(E\), image \(I\).  
+2. Compute text mood distribution \(P_T\).  
+3. Compute emoji prior distribution \(P_E\).  
+4. Compute image distribution \(P_I\) using trained CNN; fallback to heuristic if unavailable.  
+5. Fuse:  
+\[
+P_F(m) = \text{softmax}\left(w_T P_T(m) + w_E P_E(m) + w_I P_I(m)\right)
+\]
+6. Predicted mood \(m^* = \arg\max_m P_F(m)\).
+
+**Algorithm 2: RL-style Strategy Adaptation**
+1. State \(s = m^*\), action \(a \in \{calming, energizing, focus, reflective\}\).  
+2. Choose \(a\) by \(\epsilon\)-greedy policy on Q-table.  
+3. Obtain reward \(r\) from user feedback.  
+4. Update:
+\[
+Q(s,a) \leftarrow Q(s,a) + \alpha (r - Q(s,a))
+\]
+5. Persist Q-table for next session.
+
 ---
 
 ## IV. Experimental Setup and Results Discussion
@@ -196,6 +238,22 @@ The system reports:
 - Emotion labels remain noisy and context-sensitive.
 - Visual inference quality depends on dataset diversity and augmentation quality.
 - Full clinical interpretation is out of scope; system is wellness-support oriented.
+
+### F. Example Result Template for IEEE Reporting
+For your final submitted paper, include experimental tables in this format after running your dataset-specific experiments:
+
+| Model | Precision | Recall | F1 | Accuracy | ROC-AUC | Notes |
+|---|---:|---:|---:|---:|---:|---|
+| CNN + GAP (proposed) | xx.xx | xx.xx | xx.xx | xx.xx | xx.xx | sampled dataset, batch=8, epoch=2 |
+| Text-only baseline | xx.xx | xx.xx | xx.xx | xx.xx | n/a | no image input |
+| Image-only baseline | xx.xx | xx.xx | xx.xx | xx.xx | xx.xx | no text/emoji |
+
+| Class | Precision | Recall | F1 |
+|---|---:|---:|---:|
+| Joy | xx.xx | xx.xx | xx.xx |
+| Sadness | xx.xx | xx.xx | xx.xx |
+| Anger | xx.xx | xx.xx | xx.xx |
+| ... | ... | ... | ... |
 
 ---
 
@@ -281,3 +339,36 @@ The core protagonist is not a single algorithm but the **integrated decision eng
 [13] D. Johnson et al., “Transformer-based recommender systems,” *IEEE*, 2023.  
 [14] S. Kim et al., “Large language model based emotion-aware recommendation system,” *Elsevier*, 2025.  
 [15] A. Verma et al., “Hybrid transformer architecture for emotion-aware music recommendation,” *Springer*, 2026.
+
+---
+
+## X. Step-by-Step Writing Workflow (as requested)
+
+### Step 1: Collect 15–20 papers
+Collect from IEEE, Springer, Elsevier, Wiley, Taylor & Francis, and MDPI. Maintain a spreadsheet with citation details.
+
+### Step 2: Extract details per paper
+For each paper log:
+- year,
+- author list,
+- methodology,
+- dataset,
+- metrics,
+- salient features,
+- limitations,
+- short summary.
+
+### Step 3: Write sections in order
+1. Abstract  
+2. Introduction (overview, problem, applications, challenges, solutions, structure)  
+3. Literature Review (3–4 lines per paper with citations [1]...[15])  
+4. Proposed Work (architecture, pipeline, flowchart, equations)  
+5. Results and Discussion (tables, comparisons, interpretation)  
+6. Conclusion and Future Scope  
+7. References (IEEE style)
+
+### Step 4: Final humanization pass
+- ensure consistent tense and voice,
+- remove repetitive phrasing,
+- align each claim with evidence,
+- verify all citations correspond to reference list.
