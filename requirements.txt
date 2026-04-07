@@ -1,0 +1,6 @@
+requests
+pillow
+numpy
+torch
+torchvision
+python-docx
