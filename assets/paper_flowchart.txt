@@ -1,0 +1,20 @@
+User Input
+    |
+    +--> Free text context
+    +--> Emoji self-check
+    +--> Voice note -> transcription fallback
+    +--> Face image
+            |
+Preprocessing + per-modality scoring
+            |
+Confidence-aware multimodal fusion
+            |
+Ethical AI monitor
+            |
+Digital Emotional Twin logger
+            |
+Adaptive output engine
+    +--> reflective questions
+    +--> action plan
+    +--> link-based recommendations
+    +--> feedback reward update
