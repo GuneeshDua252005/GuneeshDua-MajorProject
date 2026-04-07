@@ -18,13 +18,16 @@ Cognitive Emotion Intelligence, reinforcement learning logic, digital emotional 
    - complete IEEE-style research paper draft for the title:
      `Cognitive Emotion Intelligence and Adaptive Lifestyle System`
 
-3. `docs/viva_questions.md`
+3. `docs/literature_matrix.md`
+   - 15+ paper extraction table with year, authors, methodology, dataset, performance, features, limitations, and summary
+
+4. `docs/viva_questions.md`
    - important viva questions with detailed answers
 
-4. `docs/project_tools_and_notes.md`
+5. `docs/project_tools_and_notes.md`
    - best tools for writing the paper, APK conversion notes, and project-positioning notes
 
-5. `deliverables/Cognitive_Emotion_Intelligence_Adaptive_Lifestyle_System_IEEE_Paper.docx`
+6. `deliverables/Cognitive_Emotion_Intelligence_Adaptive_Lifestyle_System_IEEE_Paper.docx`
    - generated downloadable Word document
 
 ## Why this project is useful
@@ -122,12 +125,20 @@ Without Spotify keys, the app uses the offline recommendation library included i
 
 ## Optional deep-learning workflow
 
-The core text workflow runs with lightweight requirements. The image branch needs:
+The core text workflow runs with lightweight requirements from `requirements.txt`.
+
+The optional image branch needs the extra packages in `requirements-vision.txt`:
 
 - torch
 - torchvision
 - pillow
 - numpy
+
+Install them only if you want the training, image prediction, or Grad-CAM features:
+
+```bash
+pip install -r requirements-vision.txt
+```
 
 Expected FER-style dataset structure:
 

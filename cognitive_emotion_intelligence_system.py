@@ -259,6 +259,13 @@ def pretty_label(value: str) -> str:
     return value.replace("_", " ").title()
 
 
+def prompt_input(message: str, default: str = "") -> str:
+    try:
+        return input(message)
+    except EOFError:
+        return default
+
+
 class EthicalAIMonitor:
     def assess(self, context: UserContext, result: AnalysisResult) -> str:
         notes: List[str] = []
@@ -896,15 +903,18 @@ def print_header() -> None:
 
 def collect_user_context() -> UserContext:
     print("\nEnter the current user context. Press Enter to accept defaults where shown.")
-    name = input("Name [Student]: ").strip() or "Student"
-    role = input("Role [Final-year major project student]: ").strip() or "Final-year major project student"
-    study_pressure = safe_int(input("Study pressure 1-10 [7]: "), 7, 1, 10)
-    sleep_hours = safe_float(input("Sleep hours last night [6.0]: "), 6.0, 0.0, 16.0)
-    energy_level = safe_int(input("Energy level 1-10 [5]: "), 5, 1, 10)
-    screen_time_hours = safe_float(input("Daily screen time hours [7.5]: "), 7.5, 0.0, 16.0)
-    current_goal = input("Current goal [Prepare project report and viva]: ").strip() or "Prepare project report and viva"
+    name = prompt_input("Name [Student]: ").strip() or "Student"
+    role = prompt_input("Role [Final-year major project student]: ").strip() or "Final-year major project student"
+    study_pressure = safe_int(prompt_input("Study pressure 1-10 [7]: "), 7, 1, 10)
+    sleep_hours = safe_float(prompt_input("Sleep hours last night [6.0]: "), 6.0, 0.0, 16.0)
+    energy_level = safe_int(prompt_input("Energy level 1-10 [5]: "), 5, 1, 10)
+    screen_time_hours = safe_float(prompt_input("Daily screen time hours [7.5]: "), 7.5, 0.0, 16.0)
+    current_goal = (
+        prompt_input("Current goal [Prepare project report and viva]: ").strip()
+        or "Prepare project report and viva"
+    )
     print("\nWrite the current mood, thoughts, and situation in a few sentences.")
-    journal_text = input("Journal text: ").strip()
+    journal_text = prompt_input("Journal text: ").strip()
     if not journal_text:
         journal_text = (
             "I feel some pressure because of my project and viva, but I also want to stay focused "
@@ -1069,7 +1079,7 @@ def run_text_workflow() -> None:
     display_analysis(final_result)
     display_plan(plan, twin)
 
-    reward_text = input("\nRate how useful the main action feels from -2 to +2 [1]: ").strip() or "1"
+    reward_text = prompt_input("\nRate how useful the main action feels from -2 to +2 [1]: ", "1").strip() or "1"
     reward = float(safe_float(reward_text, 1.0, -2.0, 2.0))
     policy.update_feedback(context, final_result.primary_emotion, plan.chosen_action, reward)
     print("Feedback saved to the adaptive policy file.")
@@ -1077,10 +1087,13 @@ def run_text_workflow() -> None:
 
 def run_training_menu() -> None:
     module = VisionEmotionModule()
-    data_root = input("Dataset root [data/fer]: ").strip() or "data/fer"
-    epochs = safe_int(input("Epochs [3]: "), 3, 1, 50)
-    batch_size = safe_int(input("Batch size [16]: "), 16, 1, 128)
-    output_model = input("Output model [artifacts/efficientnetv2_emotion.pt]: ").strip() or "artifacts/efficientnetv2_emotion.pt"
+    data_root = prompt_input("Dataset root [data/fer]: ").strip() or "data/fer"
+    epochs = safe_int(prompt_input("Epochs [3]: "), 3, 1, 50)
+    batch_size = safe_int(prompt_input("Batch size [16]: "), 16, 1, 128)
+    output_model = (
+        prompt_input("Output model [artifacts/efficientnetv2_emotion.pt]: ").strip()
+        or "artifacts/efficientnetv2_emotion.pt"
+    )
     try:
         metrics = module.train(data_root=data_root, output_model=output_model, epochs=epochs, batch_size=batch_size)
         print(json.dumps(metrics, indent=2))
@@ -1090,12 +1103,18 @@ def run_training_menu() -> None:
 
 def run_gradcam_menu() -> None:
     module = VisionEmotionModule()
-    model_path = input("Model path [artifacts/efficientnetv2_emotion.pt]: ").strip() or "artifacts/efficientnetv2_emotion.pt"
-    image_path = input("Image path: ").strip()
+    model_path = (
+        prompt_input("Model path [artifacts/efficientnetv2_emotion.pt]: ").strip()
+        or "artifacts/efficientnetv2_emotion.pt"
+    )
+    image_path = prompt_input("Image path: ").strip()
     if not image_path:
         print("Image path is required.")
         return
-    output_path = input("Grad-CAM output [artifacts/gradcam_overlay.png]: ").strip() or "artifacts/gradcam_overlay.png"
+    output_path = (
+        prompt_input("Grad-CAM output [artifacts/gradcam_overlay.png]: ").strip()
+        or "artifacts/gradcam_overlay.png"
+    )
     try:
         result = module.generate_gradcam(model_path=model_path, image_path=image_path, output_path=output_path)
         print(json.dumps(result, indent=2))
@@ -1105,8 +1124,11 @@ def run_gradcam_menu() -> None:
 
 def run_prediction_menu() -> None:
     module = VisionEmotionModule()
-    model_path = input("Model path [artifacts/efficientnetv2_emotion.pt]: ").strip() or "artifacts/efficientnetv2_emotion.pt"
-    image_path = input("Image path: ").strip()
+    model_path = (
+        prompt_input("Model path [artifacts/efficientnetv2_emotion.pt]: ").strip()
+        or "artifacts/efficientnetv2_emotion.pt"
+    )
+    image_path = prompt_input("Image path: ").strip()
     if not image_path:
         print("Image path is required.")
         return
@@ -1133,7 +1155,7 @@ def main() -> None:
     print_header()
     while True:
         print_menu()
-        choice = input("Select an option [1-8]: ").strip()
+        choice = prompt_input("Select an option [1-8]: ", "8").strip()
         if choice == "1":
             run_text_workflow()
         elif choice == "2":
