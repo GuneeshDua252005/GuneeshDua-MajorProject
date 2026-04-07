@@ -1,0 +1,15 @@
+streamlit
+pandas
+numpy
+pillow
+matplotlib
+scikit-learn
+requests
+python-dotenv
+huggingface_hub
+datasets
+tensorflow
+python-docx
+
+# Optional integrations
+# spotipy
