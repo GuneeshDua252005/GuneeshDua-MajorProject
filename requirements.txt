@@ -1,0 +1,12 @@
+streamlit
+pandas
+numpy
+Pillow
+matplotlib
+seaborn
+scikit-learn
+requests
+SpeechRecognition
+datasets
+tensorflow; platform_system != "Windows"
+tensorflow-intel; platform_system == "Windows"
