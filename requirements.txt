@@ -1,0 +1,9 @@
+streamlit
+numpy
+pandas
+pillow
+matplotlib
+seaborn
+scikit-learn
+huggingface_hub
+datasets
