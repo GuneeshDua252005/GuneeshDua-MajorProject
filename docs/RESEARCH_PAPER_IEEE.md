@@ -70,7 +70,7 @@ Zhang et al. investigated empathetic conversational recommender systems, arguing
 
 Meyer and Elsweiler examined LLM-based conversational agents for behavior change support in a randomized controlled trial. Their findings are valuable for this project because they show that conversational agents can influence readiness to change when designed with supportive and safe prompting. Yet the model does not explicitly integrate multimodal sensed emotion or user-side visual explainability [7].
 
-Gebele et al. analyzed CNN-based facial emotion recognition through Grad-CAM and discussed the interpretive implications of explainability maps. Their work highlights a major point relevant to this project: explainability is useful for transparency and debugging, but saliency alone should not be misrepresented as absolute evidence of “true” emotional understanding. This observation strongly motivates the present system’s ethical AI warnings and user-override design [8].
+Gebele et al. analyzed CNN-based facial emotion recognition through Grad-CAM and discussed the interpretive implications of explainability maps. Their work highlights a major point relevant to this project: explainability is useful for transparency and debugging, but saliency alone should not be misrepresented as absolute evidence of "true" emotional understanding. This observation strongly motivates the present system's ethical AI warnings and user-override design [8].
 
 Shah et al. combined Xception-based feature extraction with multiple explainability methods on the RAVDESS dataset and reported high classification accuracy along with rich interpretability. The contribution of this study lies in demonstrating that explainable emotion recognition can be both accurate and presentable. However, it uses an acted dataset and does not address low-cost deployment constraints or free API integration [9].
 
@@ -256,27 +256,27 @@ Explainable Output + User Override + Feedback
 
 ```text
 project/
-├── app.py
-├── requirements.txt
-├── README.md
-├── .gitignore
-├── dataset/
-│   ├── train/
-│   ├── val/
-│   ├── test/
-│   └── dataset_manifest.json
-├── models/
-│   ├── efficientnetv2_emotion.keras
-│   └── efficientnetv2_emotion_metadata.json
-├── cei_twin_log.csv
-├── recommender_stats.csv
-├── resource_catalog.csv
-└── docs/
-    ├── VS_CODE_WINDOWS_SETUP.md
-    ├── VIVA_GUIDE.md
-    ├── APK_CONVERSION_GUIDE.md
-    ├── RESEARCH_PAPER_IEEE.md
-    └── LITERATURE_MATRIX.md
+|-- app.py
+|-- requirements.txt
+|-- README.md
+|-- .gitignore
+|-- dataset/
+|   |-- train/
+|   |-- val/
+|   |-- test/
+|   `-- dataset_manifest.json
+|-- models/
+|   |-- efficientnetv2_emotion.keras
+|   `-- efficientnetv2_emotion_metadata.json
+|-- cei_twin_log.csv
+|-- recommender_stats.csv
+|-- resource_catalog.csv
+`-- docs/
+    |-- VS_CODE_WINDOWS_SETUP.md
+    |-- VIVA_GUIDE.md
+    |-- APK_CONVERSION_GUIDE.md
+    |-- RESEARCH_PAPER_IEEE.md
+    `-- LITERATURE_MATRIX.md
 ```
 
 ### C. Resource-Constrained Strategy
@@ -319,7 +319,7 @@ The system demonstrates the following outputs:
 4. Grad-CAM heatmap overlay,
 5. digital emotional twin updates,
 6. adaptive recommendations with feedback memory,
-7. chatbot responses customized to the user’s current mindset.
+7. chatbot responses customized to the user's current mindset.
 
 ### C. Discussion
 
@@ -353,39 +353,39 @@ Future scope includes:
 
 ## VIII. References
 
-[1] H. Kim and T. Hong, “Emotion-oriented recommender system for personalized control of indoor environmental quality,” *Building and Environment*, vol. 254, p. 111396, 2024, doi: 10.1016/j.buildenv.2024.111396.  
+[1] H. Kim and T. Hong, "Emotion-oriented recommender system for personalized control of indoor environmental quality," *Building and Environment*, vol. 254, p. 111396, 2024, doi: 10.1016/j.buildenv.2024.111396.
 
-[2] S. Abakarim, S. Qassimi, and S. Rakrak, “Emotion and sentiment enriched decision transformer for personalized recommendations,” *Scientific Reports*, vol. 15, p. 21020, 2025, doi: 10.1038/s41598-025-06386-y.  
+[2] S. Abakarim, S. Qassimi, and S. Rakrak, "Emotion and sentiment enriched decision transformer for personalized recommendations," *Scientific Reports*, vol. 15, p. 21020, 2025, doi: 10.1038/s41598-025-06386-y.
 
-[3] Y. Zhou *et al.*, “Mitigating distribution shift in offline RL-based recommender systems with a Q-learning regularization decision transformer,” *Information*, vol. 17, no. 4, p. 364, 2026, doi: 10.3390/info17040364.  
+[3] Y. Zhou *et al.*, "Mitigating distribution shift in offline RL-based recommender systems with a Q-learning regularization decision transformer," *Information*, vol. 17, no. 4, p. 364, 2026, doi: 10.3390/info17040364.
 
-[4] A. Messaoudi, H. Boughrara, and Z. Lachiri, “Multimodal emotion recognition: integrating speech and text for improved valence, arousal, and dominance prediction,” *Annals of Telecommunications*, vol. 80, pp. 401-415, 2025, doi: 10.1007/s12243-025-01069-1.  
+[4] A. Messaoudi, H. Boughrara, and Z. Lachiri, "Multimodal emotion recognition: integrating speech and text for improved valence, arousal, and dominance prediction," *Annals of Telecommunications*, vol. 80, pp. 401-415, 2025, doi: 10.1007/s12243-025-01069-1.
 
-[5] C. Fang *et al.*, “Multimodal speech emotion recognition based on large language model,” *IEICE Transactions on Information and Systems*, vol. E107-D, no. 11, pp. 1463-1466, 2024, doi: 10.1587/transinf.2024EDL8034.  
+[5] C. Fang *et al.*, "Multimodal speech emotion recognition based on large language model," *IEICE Transactions on Information and Systems*, vol. E107-D, no. 11, pp. 1463-1466, 2024, doi: 10.1587/transinf.2024EDL8034.
 
-[6] X. Zhang *et al.*, “Towards empathetic conversational recommender systems,” in *Proc. 18th ACM Conf. Recommender Systems (RecSys)*, 2024, pp. 84-93, doi: 10.1145/3640457.3688133.  
+[6] X. Zhang *et al.*, "Towards empathetic conversational recommender systems," in *Proc. 18th ACM Conf. Recommender Systems (RecSys)*, 2024, pp. 84-93, doi: 10.1145/3640457.3688133.
 
-[7] S. Meyer and D. Elsweiler, “LLM-based conversational agents for behaviour change support: A randomised controlled trial examining efficacy, safety, and the role of user behaviour,” *International Journal of Human-Computer Studies*, vol. 200, p. 103514, 2025, doi: 10.1016/j.ijhcs.2025.103514.  
+[7] S. Meyer and D. Elsweiler, "LLM-based conversational agents for behaviour change support: A randomised controlled trial examining efficacy, safety, and the role of user behaviour," *International Journal of Human-Computer Studies*, vol. 200, p. 103514, 2025, doi: 10.1016/j.ijhcs.2025.103514.
 
-[8] J. Gebele, P. Brune, F. Schwab, and S. von Mammen, “Interpreting emotions through the Grad-CAM lens: Insights and implications in CNN-based facial emotion recognition,” in *Pattern Recognition (ICPR 2024)*, LNCS 15313, Springer, 2025, pp. 414-429, doi: 10.1007/978-3-031-78201-5_27.  
+[8] J. Gebele, P. Brune, F. Schwab, and S. von Mammen, "Interpreting emotions through the Grad-CAM lens: Insights and implications in CNN-based facial emotion recognition," in *Pattern Recognition (ICPR 2024)*, LNCS 15313, Springer, 2025, pp. 414-429, doi: 10.1007/978-3-031-78201-5_27.
 
-[9] S. T. H. Shah *et al.*, “Explainable emotion recognition using Xception-based feature extraction and supervised machine learning on the RAVDESS dataset,” in *IEEE Int. Symp. Medical Measurements and Applications (MeMeA)*, 2025, pp. 1-6, doi: 10.1109/MeMeA65319.2025.11068008.  
+[9] S. T. H. Shah *et al.*, "Explainable emotion recognition using Xception-based feature extraction and supervised machine learning on the RAVDESS dataset," in *IEEE Int. Symp. Medical Measurements and Applications (MeMeA)*, 2025, pp. 1-6, doi: 10.1109/MeMeA65319.2025.11068008.
 
-[10] S. B. Punuri *et al.*, “Efficient Net-XGBoost: An implementation for facial emotion recognition using transfer learning,” *Mathematics*, vol. 11, no. 3, p. 776, 2023, doi: 10.3390/math11030776.  
+[10] S. B. Punuri *et al.*, "Efficient Net-XGBoost: An implementation for facial emotion recognition using transfer learning," *Mathematics*, vol. 11, no. 3, p. 776, 2023, doi: 10.3390/math11030776.
 
-[11] M. Khomidov and J.-H. Lee, “The novel EfficientNet architecture-based system and algorithm to predict complex human emotions,” *Algorithms*, vol. 17, no. 7, p. 285, 2024, doi: 10.3390/a17070285.  
+[11] M. Khomidov and J.-H. Lee, "The novel EfficientNet architecture-based system and algorithm to predict complex human emotions," *Algorithms*, vol. 17, no. 7, p. 285, 2024, doi: 10.3390/a17070285.
 
-[12] J. A. Ramirez-Quintana *et al.*, “Lightweight convolutional neural network with efficient channel attention mechanism for real-time facial emotion recognition in embedded systems,” *Sensors*, vol. 25, no. 23, p. 7264, 2025, doi: 10.3390/s25237264.  
+[12] J. A. Ramirez-Quintana *et al.*, "Lightweight convolutional neural network with efficient channel attention mechanism for real-time facial emotion recognition in embedded systems," *Sensors*, vol. 25, no. 23, p. 7264, 2025, doi: 10.3390/s25237264.
 
-[13] A. Katirai, “Ethical considerations in emotion recognition technologies: a review of the literature,” *AI and Ethics*, vol. 4, pp. 927-948, 2024, doi: 10.1007/s43681-023-00307-3.  
+[13] A. Katirai, "Ethical considerations in emotion recognition technologies: a review of the literature," *AI and Ethics*, vol. 4, pp. 927-948, 2024, doi: 10.1007/s43681-023-00307-3.
 
-[14] R. S. Kim, “Formal and computational foundations for implementing affective sovereignty in emotion AI systems,” *Discover Artificial Intelligence*, vol. 6, p. 235, 2026, doi: 10.1007/s44163-026-01000-0.  
+[14] R. S. Kim, "Formal and computational foundations for implementing affective sovereignty in emotion AI systems," *Discover Artificial Intelligence*, vol. 6, p. 235, 2026, doi: 10.1007/s44163-026-01000-0.
 
-[15] Y. Zhang *et al.*, “A framework towards digital twins for type 2 diabetes,” *Frontiers in Digital Health*, vol. 6, 2024, Art. no. 1336050, doi: 10.3389/fdgth.2024.1336050.  
+[15] Y. Zhang *et al.*, "A framework towards digital twins for type 2 diabetes," *Frontiers in Digital Health*, vol. 6, 2024, Art. no. 1336050, doi: 10.3389/fdgth.2024.1336050.
 
-[16] M. Kiran *et al.*, “A digital twin framework for predicting and simulating type 2 diabetes onset using retrospective lifestyle data,” *Frontiers in Digital Health*, vol. 8, 2026, Art. no. 1710829, doi: 10.3389/fdgth.2026.1710829.  
+[16] M. Kiran *et al.*, "A digital twin framework for predicting and simulating type 2 diabetes onset using retrospective lifestyle data," *Frontiers in Digital Health*, vol. 8, 2026, Art. no. 1710829, doi: 10.3389/fdgth.2026.1710829.
 
-[17] S. Chen, J. P. Lalor, Y. Yang, and A. Abbasi, “PersonaTwin: A multi-tier prompt conditioning framework for generating and evaluating personalized digital twins,” in *Proc. Fourth Workshop on Generation, Evaluation and Metrics (GEM2)*, ACL, 2025, pp. 774-788.  
+[17] S. Chen, J. P. Lalor, Y. Yang, and A. Abbasi, "PersonaTwin: A multi-tier prompt conditioning framework for generating and evaluating personalized digital twins," in *Proc. Fourth Workshop on Generation, Evaluation and Metrics (GEM2)*, ACL, 2025, pp. 774-788.
 
 ---
 

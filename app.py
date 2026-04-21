@@ -1618,7 +1618,7 @@ def is_streamlit_context() -> bool:
 
 
 def render_header() -> None:
-    st.set_page_config(page_title=APP_TITLE, page_icon="🧠", layout="wide")
+    st.set_page_config(page_title=APP_TITLE, layout="wide")
     st.title(APP_TITLE)
     st.caption(APP_TAGLINE)
     st.info(

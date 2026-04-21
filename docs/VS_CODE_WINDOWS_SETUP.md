@@ -19,32 +19,32 @@ Create or keep the project folder with the following structure:
 
 ```text
 GuneeshDua-MajorProject/
-│
-├── app.py
-├── requirements.txt
-├── .gitignore
-├── README.md
-│
-├── docs/
-│   ├── VS_CODE_WINDOWS_SETUP.md
-│   ├── RESEARCH_PAPER_IEEE.md
-│   ├── LITERATURE_MATRIX.md
-│   ├── VIVA_GUIDE.md
-│   └── APK_CONVERSION_GUIDE.md
-│
-├── dataset/
-│   ├── train/
-│   ├── val/
-│   ├── test/
-│   └── dataset_manifest.json
-│
-├── models/
-│   ├── efficientnetv2_emotion.keras
-│   └── efficientnetv2_emotion_metadata.json
-│
-├── cei_twin_log.csv
-├── recommender_stats.csv
-└── resource_catalog.csv
+|
+|-- app.py
+|-- requirements.txt
+|-- .gitignore
+|-- README.md
+|
+|-- docs/
+|   |-- VS_CODE_WINDOWS_SETUP.md
+|   |-- RESEARCH_PAPER_IEEE.md
+|   |-- LITERATURE_MATRIX.md
+|   |-- VIVA_GUIDE.md
+|   `-- APK_CONVERSION_GUIDE.md
+|
+|-- dataset/
+|   |-- train/
+|   |-- val/
+|   |-- test/
+|   `-- dataset_manifest.json
+|
+|-- models/
+|   |-- efficientnetv2_emotion.keras
+|   `-- efficientnetv2_emotion_metadata.json
+|
+|-- cei_twin_log.csv
+|-- recommender_stats.csv
+`-- resource_catalog.csv
 ```
 
 Important note:
