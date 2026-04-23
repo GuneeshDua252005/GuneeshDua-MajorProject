@@ -1379,6 +1379,24 @@ def convert_hf_image(value: object) -> Optional[Image.Image]:
     return None
 
 
+def resolve_hf_label(raw_label: object, label_feature: object = None) -> str:
+    if isinstance(raw_label, str):
+        return raw_label
+    if raw_label is None:
+        return "neutral"
+    names = getattr(label_feature, "names", None)
+    if names and isinstance(raw_label, (int, np.integer)):
+        idx = int(raw_label)
+        if 0 <= idx < len(names):
+            return str(names[idx])
+    if isinstance(raw_label, dict):
+        if "label" in raw_label:
+            return resolve_hf_label(raw_label["label"], label_feature)
+        if "name" in raw_label:
+            return str(raw_label["name"])
+    return str(raw_label)
+
+
 def hf_dataset_to_folders(dataset_id: str, sample_size: int, train_ratio: float, val_ratio: float, seed: int) -> Tuple[bool, str]:
     if load_dataset is None:
         return False, "The datasets package is not installed."
@@ -1415,10 +1433,20 @@ def hf_dataset_to_folders(dataset_id: str, sample_size: int, train_ratio: float,
     if image_col is None or label_col is None:
         return False, "Could not auto-detect image and label columns."
 
+    label_feature = None
+    try:
+        if DatasetDict is not None and isinstance(dataset_obj, DatasetDict):
+            first_split = next(iter(dataset_obj.keys()))
+            label_feature = dataset_obj[first_split].features.get(label_col)
+        else:
+            label_feature = dataset_obj.features.get(label_col)
+    except Exception:
+        label_feature = None
+
     records_by_label: Dict[str, List[Tuple[Image.Image, str]]] = {}
     for record in all_records:
         image = convert_hf_image(record.get(image_col))
-        label = normalize_label(record.get(label_col))
+        label = normalize_label(resolve_hf_label(record.get(label_col), label_feature))
         if image is None:
             continue
         records_by_label.setdefault(label, []).append((image, label))
