@@ -1,0 +1,4 @@
+[server]
+# Avoid Streamlit's source watcher introspecting torch internals on Windows,
+# which can print a noisy "RuntimeError: Event loop is closed" on shutdown.
+fileWatcherType = "none"
