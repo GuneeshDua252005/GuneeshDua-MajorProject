@@ -2153,7 +2153,9 @@ def main() -> None:
 
     require_streamlit()
     ensure_runtime_files()
-    export_resource_catalog_csv()
+    # Avoid rewriting CSV on every rerun; this reduces unnecessary file churn.
+    if not CATALOG_EXPORT_PATH.exists():
+        export_resource_catalog_csv()
 
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     st.title(APP_TITLE)
