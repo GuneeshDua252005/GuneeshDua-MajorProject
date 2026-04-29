@@ -18,9 +18,24 @@ from typing import Dict, List, Optional, Tuple
 # Keep TensorFlow startup noise low before TensorFlow is imported lazily.
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
-import numpy as np
 import streamlit as st
-from PIL import Image, ImageOps
+
+try:
+    import numpy as np
+except Exception as exc:  # pragma: no cover - depends on local environment
+    np = None  # type: ignore[assignment]
+    NUMPY_IMPORT_ERROR = exc
+else:
+    NUMPY_IMPORT_ERROR = None
+
+try:
+    from PIL import Image, ImageOps
+except Exception as exc:  # pragma: no cover - depends on local environment
+    Image = None  # type: ignore[assignment]
+    ImageOps = None  # type: ignore[assignment]
+    PILLOW_IMPORT_ERROR = exc
+else:
+    PILLOW_IMPORT_ERROR = None
 
 
 APP_TITLE = "Emotionally Intelligent Animated Mascot Chatbot"
@@ -226,6 +241,10 @@ def preprocess_image(image: Image.Image, target_size: Tuple[int, int]) -> np.nda
 def predict_emotion(image: Image.Image, status: ModelStatus) -> Tuple[str, float, List[Tuple[str, float]]]:
     if not status.ready or status.model is None:
         raise RuntimeError("Prediction requires a loaded model.")
+    if np is None:
+        raise RuntimeError(f"NumPy is required for prediction: {NUMPY_IMPORT_ERROR}")
+    if ImageOps is None:
+        raise RuntimeError(f"Pillow is required for image preprocessing: {PILLOW_IMPORT_ERROR}")
 
     input_shape = getattr(status.model, "input_shape", None)
     if isinstance(input_shape, list):
@@ -325,11 +344,21 @@ def render_sidebar(status: ModelStatus) -> None:
             icon = "[found]" if path.is_file() else "[missing]"
             st.caption(f"{icon} {path}")
 
+        st.markdown("### Dependency status")
+        st.caption(f"NumPy: {'available' if np is not None else f'missing ({NUMPY_IMPORT_ERROR})'}")
+        st.caption(f"Pillow: {'available' if Image is not None else f'missing ({PILLOW_IMPORT_ERROR})'}")
+
 
 def render_prediction_tab(status: ModelStatus) -> None:
     left, right = st.columns([1.1, 0.9])
     with left:
         st.subheader("Image emotion prediction")
+        if Image is None:
+            st.warning(f"Install Pillow to enable image uploads: {PILLOW_IMPORT_ERROR}")
+            return
+        if np is None:
+            st.warning(f"Install NumPy to enable image prediction: {NUMPY_IMPORT_ERROR}")
+            return
         uploaded_file = st.file_uploader("Upload a face/image", type=["png", "jpg", "jpeg", "webp"])
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
