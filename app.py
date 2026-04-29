@@ -5,6 +5,7 @@ import csv
 import hashlib
 import io
 import json
+import logging
 import math
 import os
 import random
@@ -16,6 +17,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.parse import quote_plus
+
+# Keep TensorFlow/Keras startup noise out of the Streamlit console.
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+os.environ.setdefault("TF_ENABLE_ONEDNN_OPTS", "0")
+
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
 
 import matplotlib.pyplot as plt
 import numpy as np
