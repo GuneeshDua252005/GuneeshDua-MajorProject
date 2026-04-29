@@ -62,6 +62,36 @@ RECOMMENDER_STATS_PATH = ROOT / "recommender_stats.csv"
 RESOURCE_CATALOG_PATH = ROOT / "resource_catalog.csv"
 DATASET_MANIFEST_PATH = DATASET_DIR / "dataset_manifest.json"
 
+TWIN_LOG_FIELDNAMES = [
+    "timestamp",
+    "username",
+    "user_hash",
+    "face_emotion",
+    "face_confidence",
+    "text_emotion",
+    "voice_emotion",
+    "emoji_emotion",
+    "fused_emotion",
+    "final_emotion_after_override",
+    "confidence",
+    "valence",
+    "arousal",
+    "stress",
+    "used_sources",
+    "override_emotion",
+    "context_excerpt",
+    "voice_excerpt",
+    "consent_to_log",
+]
+DEFAULT_TWIN_SNAPSHOT = {
+    "dominant_emotion": "neutral",
+    "avg_valence": 0.0,
+    "avg_arousal": 0.0,
+    "avg_stress": 0.0,
+    "entries": 0,
+    "volatility": 0.0,
+}
+
 APP_TITLE = "Cognitive Emotion Intelligence & Adaptive Lifestyle System"
 APP_TAGLINE = (
     "A single-file Streamlit major-project prototype with multimodal emotion fusion, "
@@ -913,67 +943,89 @@ def recommend_resources(final_emotion: str, recent_ids: List[str], top_n: int = 
     ].reset_index(drop=True)
 
 
+def empty_twin_snapshot() -> Dict[str, Any]:
+    return DEFAULT_TWIN_SNAPSHOT.copy()
+
+
+def twin_log_has_expected_header() -> bool:
+    if not TWIN_LOG_PATH.exists() or TWIN_LOG_PATH.stat().st_size == 0:
+        return True
+    try:
+        with TWIN_LOG_PATH.open("r", encoding="utf-8", newline="") as handle:
+            return next(csv.reader(handle), []) == TWIN_LOG_FIELDNAMES
+    except (OSError, csv.Error):
+        return False
+
+
+def normalize_twin_log_file() -> None:
+    if not TWIN_LOG_PATH.exists() or twin_log_has_expected_header():
+        return
+    existing_rows = read_twin_log().to_dict("records")
+    backup_path = TWIN_LOG_PATH.with_name(
+        f"{TWIN_LOG_PATH.stem}.backup-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}{TWIN_LOG_PATH.suffix}"
+    )
+    TWIN_LOG_PATH.replace(backup_path)
+    with TWIN_LOG_PATH.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=TWIN_LOG_FIELDNAMES)
+        writer.writeheader()
+        writer.writerows({key: row.get(key, "") for key in TWIN_LOG_FIELDNAMES} for row in existing_rows)
+
+
+def read_twin_log() -> pd.DataFrame:
+    if not TWIN_LOG_PATH.exists() or TWIN_LOG_PATH.stat().st_size == 0:
+        return pd.DataFrame(columns=TWIN_LOG_FIELDNAMES)
+
+    rows: List[Dict[str, Any]] = []
+    try:
+        with TWIN_LOG_PATH.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle, restkey="_extra_fields")
+            if not reader.fieldnames:
+                return pd.DataFrame(columns=TWIN_LOG_FIELDNAMES)
+            known_fields = [field for field in reader.fieldnames if field in TWIN_LOG_FIELDNAMES]
+            for raw_row in reader:
+                if raw_row.get("_extra_fields"):
+                    continue
+                normalized_row = {key: "" for key in TWIN_LOG_FIELDNAMES}
+                for key in known_fields:
+                    normalized_row[key] = raw_row.get(key, "")
+                rows.append(normalized_row)
+    except (OSError, csv.Error):
+        return pd.DataFrame(columns=TWIN_LOG_FIELDNAMES)
+
+    return pd.DataFrame(rows, columns=TWIN_LOG_FIELDNAMES)
+
+
 def append_twin_log(row: Dict[str, Any]) -> None:
     ensure_runtime_dirs()
-    fieldnames = [
-        "timestamp",
-        "username",
-        "user_hash",
-        "face_emotion",
-        "face_confidence",
-        "text_emotion",
-        "voice_emotion",
-        "emoji_emotion",
-        "fused_emotion",
-        "final_emotion_after_override",
-        "confidence",
-        "valence",
-        "arousal",
-        "stress",
-        "used_sources",
-        "override_emotion",
-        "context_excerpt",
-        "voice_excerpt",
-        "consent_to_log",
-    ]
+    normalize_twin_log_file()
     file_exists = TWIN_LOG_PATH.exists()
     with TWIN_LOG_PATH.open("a", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=TWIN_LOG_FIELDNAMES)
         if not file_exists:
             writer.writeheader()
-        writer.writerow({key: row.get(key, "") for key in fieldnames})
+        writer.writerow({key: row.get(key, "") for key in TWIN_LOG_FIELDNAMES})
 
 
 def build_twin_snapshot(user_hash: str) -> Dict[str, Any]:
     if not TWIN_LOG_PATH.exists():
-        return {
-            "dominant_emotion": "neutral",
-            "avg_valence": 0.0,
-            "avg_arousal": 0.0,
-            "avg_stress": 0.0,
-            "entries": 0,
-            "volatility": 0.0,
-        }
+        return empty_twin_snapshot()
 
-    df = pd.read_csv(TWIN_LOG_PATH)
+    df = read_twin_log()
     if df.empty or user_hash not in df["user_hash"].values:
-        return {
-            "dominant_emotion": "neutral",
-            "avg_valence": 0.0,
-            "avg_arousal": 0.0,
-            "avg_stress": 0.0,
-            "entries": 0,
-            "volatility": 0.0,
-        }
+        return empty_twin_snapshot()
 
     user_df = df[df["user_hash"] == user_hash].tail(30).copy()
-    dominant = user_df["final_emotion_after_override"].mode().iloc[0]
-    volatility = float(user_df["valence"].astype(float).std(ddof=0)) if len(user_df) > 1 else 0.0
+    numeric_columns = ["valence", "arousal", "stress"]
+    for column in numeric_columns:
+        user_df[column] = pd.to_numeric(user_df[column], errors="coerce").fillna(0.0)
+    dominant_mode = user_df["final_emotion_after_override"].replace("", "neutral").mode()
+    dominant = dominant_mode.iloc[0] if not dominant_mode.empty else "neutral"
+    volatility = float(user_df["valence"].std(ddof=0)) if len(user_df) > 1 else 0.0
     return {
         "dominant_emotion": dominant,
-        "avg_valence": round(float(user_df["valence"].astype(float).mean()), 3),
-        "avg_arousal": round(float(user_df["arousal"].astype(float).mean()), 3),
-        "avg_stress": round(float(user_df["stress"].astype(float).mean()), 3),
+        "avg_valence": round(float(user_df["valence"].mean()), 3),
+        "avg_arousal": round(float(user_df["arousal"].mean()), 3),
+        "avg_stress": round(float(user_df["stress"].mean()), 3),
         "entries": int(len(user_df)),
         "volatility": round(volatility, 3),
     }
