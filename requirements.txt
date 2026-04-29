@@ -1,0 +1,9 @@
+streamlit
+numpy
+opencv-python
+torch
+torchvision
+transformers
+nltk
+SpeechRecognition
+pyttsx3
