@@ -1,0 +1,845 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>GGSIPU Major Project Report</title>
+<style>
+@page { size: A4; margin: 1in 1in 1in 1.5in; }
+body { font-family: "Times New Roman", Times, serif; margin:0; background:#f4f4f4; }
+.page { width: 210mm; min-height: 297mm; box-sizing: border-box; padding: 1in 1in 1in 1.5in; margin: 0 auto 12px auto; background:white; position:relative; page-break-after: always; }
+h1 { font-size:16pt; font-weight:bold; text-align:left; margin-top:0; }
+p { font-size:12pt; line-height:1.5; text-align:justify; }
+pre { white-space:pre-wrap; font-family:"Courier New", monospace; font-size:8.5pt; line-height:1.15; border:1px solid #ddd; padding:8px; }
+footer { position:absolute; left:1.5in; right:1in; bottom:.5in; font-size:10pt; display:flex; justify-content:space-between; }
+@media print { body { background:white; } .page { margin:0; box-shadow:none; } }
+</style></head><body><section class="page"><h1>Cover Page</h1><p>Title of the Report: Emotionally Intelligent Animated Mascot Chatbot with Voice, Facial and Text Sentiment Detection</p><p>AIML-452 Major Project - Dissertation</p><p>Submitted in partial fulfillment of the requirement for the award of the degree of Bachelor of Technology in AIML.</p><p>Submitted by: NAME OF THE STUDENT, ENROLLMENT NO.</p><p>Under the supervision of: NAME OF THE FACULTY SUPERVISOR, DESIGNATION.</p><p>Name of the Department, Name of the Institute, Address of the Institute.</p><p>May/June 2026</p></section><section class="page"><h1>Declaration</h1><p>This is to certify that the material embodied in this Major Project - Dissertation titled Emotionally Intelligent Animated Mascot Chatbot with Voice, Facial and Text Sentiment Detection being submitted in the partial fulfillment of the requirements for the award of the degree of Bachelor of Technology in AIML is based on my original work.</p><p>It is further certified that this Major Project - Dissertation work has not been submitted in full or in part to this university or any other university for the award of any other degree or diploma. My indebtedness to other works has been duly acknowledged at the relevant places.</p><p>Name of the Student, Enrollment No.</p><footer><span>DEPARTMENT OF AIML</span><span>i</span></footer></section><section class="page"><h1>Certificate</h1><p>This is to certify that the work embodied in this Major Project - Dissertation titled Emotionally Intelligent Animated Mascot Chatbot with Voice, Facial and Text Sentiment Detection being submitted in the partial fulfillment of the requirements for the award of the degree of Bachelor of Technology in AIML is original and has been carried out by NAME OF THE STUDENT under my supervision and guidance.</p><p>It is further certified that this Major Project - Dissertation work has not been submitted in full or in part to this university or any other university for the award of any other degree or diploma to the best of my knowledge and belief.</p><p>Name of the Faculty Supervisor, Designation. Name of the HOD, HOD, Name of the Institute.</p><footer><span>DEPARTMENT OF AIML</span><span>i</span></footer></section><section class="page"><h1>Acknowledgement</h1><p>I express my sincere gratitude to my faculty supervisor for consistent guidance, technical direction and academic support during the development of this major project.</p><p>I am thankful to the Head of Department, Principal and the Institute for providing the academic environment and infrastructure needed for project completion.</p><p>I also thank mentors, peers, family members and friends for their constructive feedback, encouragement and patience during design, implementation, testing and report preparation.</p><footer><span>DEPARTMENT OF AIML</span><span>i</span></footer></section><section class="page"><h1>Abstract</h1><p>This major project presents an Emotionally Intelligent Animated Mascot Chatbot designed for supportive human-computer interaction through text, voice, facial expression and emoji-based emotional cues. The system uses a PyTorch EfficientNetV2-S architecture for facial emotion classification and Grad-CAM visual explanation, Hugging Face Transformers for free text emotion and sentiment classification, SpeechRecognition for speech-to-text, NLTK WordNet for synonym-assisted intent understanding, Streamlit for user interface design and a digital emotional twin log for persistent personalization.</p><p>The project avoids TensorFlow, Keras and paid OpenAI APIs. It uses Hugging Face access tokens through environment variables and public music or video search links for adaptive recommendations. The fusion engine combines face, voice, text and emoji evidence into a unified User Emotional State Score. The chatbot then changes tone through therapist, friendly or motivational modes and asks context-specific reflective questions instead of producing generic FAQ responses.</p><p>The report explains the problem statement, software requirement specification, feasibility, architecture, implementation, training pipeline, testing and future scope according to the GGSIPU Major Project - Dissertation format.</p><footer><span>DEPARTMENT OF AIML</span><span>i</span></footer></section><section class="page"><h1>Table of Contents</h1><p>Declaration i | Certificate ii | Acknowledgement iii | Abstract iv | List of Figures v | List of Tables vi</p><p>Chapter 1 Introduction 1 | Chapter 2 Problem Statement 10 | Chapter 3 Analysis 18 | Chapter 4 Design and Architecture 33 | Chapter 5 Implementation 46 | Chapter 6 Testing 68 | Chapter 7 Summary and Conclusion 77 | Chapter 8 Limitations and Future Work 81 | Bibliography 86 | Appendix 90</p><footer><span>DEPARTMENT OF AIML</span><span>i</span></footer></section><section class="page"><h1>List of Figures</h1><p>Figure 3.1 System Use Case Diagram 29 | Figure 3.2 Context Level DFD 31 | Figure 4.1 Work Breakdown Structure 34 | Figure 4.2 Module Architecture 37 | Figure 4.3 Activity Flow 41 | Figure 4.4 Class Diagram 44 | Figure 5.1 Streamlit Dashboard Screen 54 | Figure 5.2 Animated Mascot Expressions 57 | Figure 5.3 Grad-CAM Face Analysis 61 | Figure 5.4 Digital Twin Log View 64</p><footer><span>DEPARTMENT OF AIML</span><span>i</span></footer></section><section class="page"><h1>List of Tables</h1><p>Table 3.1 Functional Requirements 21 | Table 3.2 Non-functional Requirements 24 | Table 3.3 Feasibility Study 26 | Table 3.4 Tools and Technologies 28 | Table 5.1 Implementation Modules 48 | Table 5.2 Requirements.txt Dependencies 51 | Table 6.1 Test Cases 70 | Table 6.2 Risk and Mitigation Matrix 75</p><footer><span>DEPARTMENT OF AIML</span><span>1</span></footer></section><section class="page"><h1>CHAPTER 1: INTRODUCTION</h1><p>The proposed major project is a development-based artificial intelligence system that studies how a chatbot can become more emotionally aware when it listens to multiple signals rather than only typed text. Conventional chatbot demonstrations usually return repeated answers because they do not observe the user&#x27;s emotional state, voice energy, facial expression, previous interaction pattern or preferred tone. This project addresses that limitation through a single Python 3 application suitable for execution in Visual Studio Code on a Windows 11 laptop.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>2</span></footer></section><section class="page"><h1>1.1 Background</h1><p>Emotion-aware computing has become relevant because students, professionals and users often interact with software during stress, study pressure, loneliness, lack of motivation or emotional overload. A therapeutic-style assistant cannot replace a clinical professional, but it can provide safe reflection, emotional awareness, adaptive questions and practical next steps. The system therefore uses ethical AI monitoring and does not claim medical diagnosis.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>3</span></footer></section><section class="page"><h1>1.2 Project Theme</h1><p>The project theme is Cognitive Emotional Intelligence and Adaptive Lifestyle Operational System. The implemented software acts as an animated mascot chatbot that reads face, voice, text and emoji cues, computes a fused mood state, recommends supportive content and stores a digital emotional twin for personalization.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>4</span></footer></section><section class="page"><h1>1.3 Need of the Project</h1><p>A major project should demonstrate analysis, design, implementation, testing and social usefulness. This project demonstrates all of these through PyTorch facial learning, transformer-based language understanding, voice transcription, recommendation logic, Streamlit UI, Grad-CAM explainability and structured logging.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>5</span></footer></section><section class="page"><h1>1.4 Scope</h1><p>The scope includes a single-file Python application, a training pipeline for a local facial-expression dataset, free Hugging Face API integration, animated CSS mascot, mic-based voice input where Streamlit supports it, webcam capture, CSV-based digital twin storage, adaptive recommendations and a viva-friendly setup guide.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>6</span></footer></section><section class="page"><h1>1.5 Contribution</h1><p>The main contribution is a complete multimodal emotional intelligence prototype that is demo-ready without TensorFlow or Keras. It uses EfficientNetV2-S rather than MobileNetV2 because EfficientNetV2 is newer, more efficient and suitable for transfer learning with modern PyTorch tooling.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>7</span></footer></section><section class="page"><h1>1.6 Ethical Position</h1><p>The application clearly states that it offers supportive guidance only. It avoids diagnostic claims, shows confidence bands and warns the user when fewer modalities are available. These design choices are important for responsible AI [1].</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>8</span></footer></section><section class="page"><h1>1.7 Report Organization</h1><p>Chapter 1 introduces the project. Chapter 2 defines the problem and objectives. Chapter 3 presents SRS, feasibility, tools and diagrams. Chapter 4 explains architecture. Chapter 5 details implementation and setup. Chapter 6 covers testing. Chapter 7 concludes the work. Chapter 8 discusses limitations and future scope.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>9</span></footer></section><section class="page"><h1>1.8 Execution Environment</h1><p>The target machine is a Windows 11 laptop with Intel Core i5 class processor. The application is kept lightweight by using a Streamlit web UI, CPU-compatible PyTorch inference and optional model training with small batch sizes.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>10</span></footer></section><section class="page"><h1>1.9 Major Project Category</h1><p>This is a Major Project - Dissertation report for AIML-452. It is not an internship report and therefore focuses on problem formulation, system design, implementation, evaluation and academic references.</p><p>IEEE citation placement: multimodal emotion recognition, transformer language models and responsible AI are cited in the relevant technical chapters [1]-[6].</p><footer><span>DEPARTMENT OF AIML</span><span>11</span></footer></section><section class="page"><h1>CHAPTER 2: PROBLEM STATEMENT</h1><p>Most chatbot demonstrations fail to identify the user&#x27;s mindset because they are limited to typed input and static FAQ patterns. Such systems do not use speech, facial expression, context history or adaptive personality. The project problem is to design and implement a chatbot that can infer emotional state from multiple modalities and respond in a more meaningful, non-generic manner.</p><footer><span>DEPARTMENT OF AIML</span><span>12</span></footer></section><section class="page"><h1>2.1 Problem Definition</h1><p>To develop a free, single-file Python 3 application that uses PyTorch EfficientNetV2-S, Hugging Face Transformers, NLTK, OpenCV, SpeechRecognition and Streamlit to detect user emotion from text, voice and facial cues, fuse the detected signals into a User Emotional State Score and display an animated mascot chatbot that adapts its tone and recommendations.</p><footer><span>DEPARTMENT OF AIML</span><span>13</span></footer></section><section class="page"><h1>2.2 Objectives</h1><p>The objectives are: implement text emotion detection using free transformer models, implement voice transcription and energy-based mood estimation, implement facial emotion detection using OpenCV and PyTorch EfficientNetV2-S, implement Grad-CAM explainability, implement multimodal fusion, implement animated mascot UI, implement adaptive chatbot response generation and implement a digital twin log.</p><footer><span>DEPARTMENT OF AIML</span><span>14</span></footer></section><section class="page"><h1>2.3 Real World Relevance</h1><p>Students often face academic stress, examination pressure and emotional fatigue. A supportive AI companion can ask reflective questions, encourage healthy micro-actions and recommend calming or motivating resources. The project is designed as a technical demonstration rather than a medical product.</p><footer><span>DEPARTMENT OF AIML</span><span>15</span></footer></section><section class="page"><h1>2.4 Existing System Limitations</h1><p>Existing FAQ bots are usually rule-based. Many GPT-style chatbots require paid API keys. Several old facial emotion demos use MobileNetV2 or TensorFlow/Keras. The proposed system avoids paid APIs, avoids TensorFlow/Keras and uses PyTorch EfficientNetV2-S for modern CNN-based facial analysis.</p><footer><span>DEPARTMENT OF AIML</span><span>16</span></footer></section><section class="page"><h1>2.5 Proposed System</h1><p>The proposed system integrates four emotional signals: text mood, voice mood, face mood and emoji mood. It computes weighted fusion, displays confidence, logs emotional history and produces context-aware replies in therapist, friendly and motivational modes.</p><footer><span>DEPARTMENT OF AIML</span><span>17</span></footer></section><section class="page"><h1>2.6 Assumptions</h1><p>The system assumes webcam and microphone permission when live analysis is required. Hugging Face token is optional and should be supplied through an environment variable. Without a trained .pth file the facial module uses OpenCV heuristic fallback.</p><footer><span>DEPARTMENT OF AIML</span><span>18</span></footer></section><section class="page"><h1>2.7 Expected Outcomes</h1><p>Expected outcomes include a working Streamlit interface, animated mascot expression change, text and voice emotion interpretation, EfficientNetV2-S training option, Grad-CAM visualization, recommendations and CSV downloads for logs.</p><footer><span>DEPARTMENT OF AIML</span><span>19</span></footer></section><section class="page"><h1>CHAPTER 3: ANALYSIS</h1><p>The analysis phase converts the project idea into functional, non-functional and technical requirements. Since the application uses multiple AI modules, analysis also covers feasibility, user roles, data flow, external API usage and security of tokens.</p><footer><span>DEPARTMENT OF AIML</span><span>20</span></footer></section><section class="page"><h1>3.1 Software Requirement Specification</h1><p>The application shall run as a Streamlit app. It shall accept username, webcam image, microphone recording where supported, typed text and emoji mood. It shall process each input through its corresponding AI or heuristic module and produce a fused state.</p><footer><span>DEPARTMENT OF AIML</span><span>21</span></footer></section><section class="page"><h1>3.1.1 Functional Requirements</h1><p>FR1: detect text emotion using Hugging Face Transformers. FR2: enrich intent using NLTK synonyms. FR3: record or accept voice and transcribe it. FR4: detect facial emotion using OpenCV and PyTorch. FR5: compute fused mood. FR6: generate adaptive chatbot reply. FR7: show animated mascot. FR8: log digital twin data. FR9: provide training pipeline. FR10: export resource catalog.</p><footer><span>DEPARTMENT OF AIML</span><span>22</span></footer></section><section class="page"><h1>3.1.2 Non-functional Requirements</h1><p>The system should be portable, free to execute, understandable for viva, secure with respect to API tokens, responsive on CPU for demo scale, maintainable as a single file, and transparent about confidence and ethical limitations.</p><footer><span>DEPARTMENT OF AIML</span><span>23</span></footer></section><section class="page"><h1>3.2 Feasibility Study</h1><p>Technical feasibility is high because Python, PyTorch, Streamlit and Hugging Face are widely supported. Operational feasibility is high because the UI is browser-based. Economic feasibility is high because the system avoids paid OpenAI and Spotify API usage. Schedule feasibility is achieved by keeping deployment as a local Streamlit app.</p><footer><span>DEPARTMENT OF AIML</span><span>24</span></footer></section><section class="page"><h1>3.3 Tools and Technologies</h1><p>Python 3 is the programming language. PyTorch and torchvision provide EfficientNetV2-S. Transformers provide text models. OpenCV handles face detection and image operations. SpeechRecognition handles speech-to-text. NLTK supports synonyms. Streamlit provides UI. CSV files store the digital twin and recommender memory.</p><footer><span>DEPARTMENT OF AIML</span><span>25</span></footer></section><section class="page"><h1>3.4 Why Hugging Face Instead of Paid GPT API</h1><p>Hugging Face is suitable because it provides free accounts, free read tokens and many open models. The project can use google/flan-t5-small through the free inference route or local fallback. OpenAI and Spotify developer API flows can introduce cost and key-management issues, while public search links remain free.</p><footer><span>DEPARTMENT OF AIML</span><span>26</span></footer></section><section class="page"><h1>3.5 Security Analysis</h1><p>Tokens must never be hardcoded in source code. The implementation uses HF_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variables. The report package intentionally removes any pasted secrets and documents safe token setup.</p><footer><span>DEPARTMENT OF AIML</span><span>27</span></footer></section><section class="page"><h1>3.6 Use Case Diagram</h1><p>Actor: User. Use cases: Login by username, capture face, record voice, type context, choose emoji, analyze mood, ask chatbot, receive recommendation, train model, download logs. Actor: Developer. Use cases: prepare dataset, run app, set token, evaluate output.</p><footer><span>DEPARTMENT OF AIML</span><span>28</span></footer></section><section class="page"><h1>3.7 Data Flow Diagram</h1><p>Input layer collects webcam, audio, text and emoji. Processing layer runs facial, voice and text analysis. Fusion layer computes score. Response layer generates chatbot reply and recommendation. Storage layer logs CSV records.</p><footer><span>DEPARTMENT OF AIML</span><span>29</span></footer></section><section class="page"><h1>3.8 Data Requirements</h1><p>Training data is organized under dataset/train, dataset/val and dataset/test with class folders such as happy, sad, angry and neutral. Images may come from public facial expression datasets when licensing permits [7], [8].</p><footer><span>DEPARTMENT OF AIML</span><span>30</span></footer></section><section class="page"><h1>3.9 API Requirements</h1><p>The Hugging Face token is optional and free. If missing or API access fails, the system uses a local rule-based emotional coach so the demo remains functional. This is important for viva reliability.</p><footer><span>DEPARTMENT OF AIML</span><span>31</span></footer></section><section class="page"><h1>CHAPTER 4: DESIGN AND ARCHITECTURE</h1><p>The system is designed as a modular single-file application. Although the source code is in one file to satisfy execution simplicity, the internal structure separates runtime setup, catalog generation, text analysis, voice analysis, facial analysis, fusion, chatbot generation, training, logging and UI rendering.</p><footer><span>DEPARTMENT OF AIML</span><span>32</span></footer></section><section class="page"><h1>4.1 Structure Chart / Work Breakdown Structure</h1><p>Level 1: Emotionally Intelligent Animated Mascot Chatbot. Level 2: User Interface, Multimodal Input, AI Analysis, Fusion Engine, Chatbot Engine, Recommender, Digital Twin, Training Pipeline, Ethics Monitor. Level 3: individual functions for each processing operation.</p><footer><span>DEPARTMENT OF AIML</span><span>33</span></footer></section><section class="page"><h1>4.2 Module: User Interface</h1><p>The Streamlit interface provides tabs for Live Emotion Studio, Mascot Chat, Training, Twin Memory and Setup. Sidebar controls collect username, tone mode and emoji mood. The UI is intentionally clean for demonstration and viva explanation.</p><footer><span>DEPARTMENT OF AIML</span><span>34</span></footer></section><section class="page"><h1>4.3 Module: Text Intelligence</h1><p>Text intelligence includes transformer classification, heuristic fallback, NLTK synonym expansion and intent inference. The output includes mood, confidence, sentiment label, emotion label, intent and synonym hints.</p><footer><span>DEPARTMENT OF AIML</span><span>35</span></footer></section><section class="page"><h1>4.4 Module: Voice Intelligence</h1><p>Voice intelligence converts microphone audio to text using SpeechRecognition. It also estimates average wave energy to identify calm or energetic delivery. The transcript is then passed to the same text intelligence module.</p><footer><span>DEPARTMENT OF AIML</span><span>36</span></footer></section><section class="page"><h1>4.5 Module: Facial Intelligence</h1><p>Facial intelligence detects the largest face using OpenCV Haar cascade. If a trained EfficientNetV2-S checkpoint exists, PyTorch inference predicts the class and Grad-CAM highlights important regions. Otherwise a heuristic fallback identifies broad mood indicators.</p><footer><span>DEPARTMENT OF AIML</span><span>37</span></footer></section><section class="page"><h1>4.6 Module: EfficientNetV2-S</h1><p>EfficientNetV2-S is selected because it provides a modern convolutional architecture with efficient feature extraction and transfer learning support. The classifier head is replaced with dropout and linear layers for project-specific emotion classes [3].</p><footer><span>DEPARTMENT OF AIML</span><span>38</span></footer></section><section class="page"><h1>4.7 Module: Grad-CAM</h1><p>Grad-CAM registers forward and backward hooks on the last convolutional layer, weights activation maps by gradients and overlays a heatmap on the face crop. This improves explainability for viva and evaluation [4].</p><footer><span>DEPARTMENT OF AIML</span><span>39</span></footer></section><section class="page"><h1>4.8 Module: Fusion Engine</h1><p>The fusion engine assigns weights to face, voice, text and emoji signals. The default weights are 0.35, 0.25, 0.25 and 0.15 respectively. The highest weighted mood becomes the fused emotional state and normalized score becomes User Emotional State Score.</p><footer><span>DEPARTMENT OF AIML</span><span>40</span></footer></section><section class="page"><h1>4.9 Module: Chatbot Engine</h1><p>The chatbot constructs a system prompt with username, fused mood, tone mode, detected intent, digital twin summary and analysis snapshot. Hugging Face API is used if HF_TOKEN is present; otherwise a local coach generates the answer.</p><footer><span>DEPARTMENT OF AIML</span><span>41</span></footer></section><section class="page"><h1>4.10 Module: Recommender</h1><p>The recommender contains mood-tagged YouTube, Spotify and YouTube Music public search resources. A lightweight reinforcement-learning-style score increases novelty and learns from likes or skips stored in CSV.</p><footer><span>DEPARTMENT OF AIML</span><span>42</span></footer></section><section class="page"><h1>4.11 Class Diagram</h1><p>CatalogEntry stores resource metadata. FolderDataset wraps image-folder training data. Other modules are implemented as functions to keep the single-file requirement simple.</p><footer><span>DEPARTMENT OF AIML</span><span>43</span></footer></section><section class="page"><h1>4.12 Activity Diagram</h1><p>Start application, enter username, capture multimodal input, analyze individual signals, fuse moods, update mascot, show recommendation, ask chatbot, log interaction, optionally train EfficientNetV2-S and download records.</p><footer><span>DEPARTMENT OF AIML</span><span>44</span></footer></section><section class="page"><h1>CHAPTER 5: IMPLEMENTATION</h1><p>The implementation is provided as a complete single-file Python program named app.py. It uses only Python 3 libraries specified in requirements.txt and does not import TensorFlow or Keras. The source code is kept compatible with VS Code and Streamlit.</p><footer><span>DEPARTMENT OF AIML</span><span>45</span></footer></section><section class="page"><h1>5.1 File Structure</h1><p>The project folder contains app.py, requirements.txt, README.md, docs folder, dataset folder created at runtime, models folder created at runtime, resource_catalog.csv, cei_twin_log.csv and recommender_stats.csv.</p><footer><span>DEPARTMENT OF AIML</span><span>46</span></footer></section><section class="page"><h1>5.2 Requirements.txt</h1><p>The requirements file contains streamlit, torch, torchvision, transformers, opencv-python, numpy, nltk, SpeechRecognition and pyttsx3. These are the only required libraries for the implemented solution.</p><footer><span>DEPARTMENT OF AIML</span><span>47</span></footer></section><section class="page"><h1>5.3 VS Code Execution Steps</h1><p>Create a folder, open it in VS Code, create app.py and requirements.txt, open PowerShell terminal, run python -m venv .venv, activate .venv, upgrade pip, install requirements and run streamlit run app.py.</p><footer><span>DEPARTMENT OF AIML</span><span>48</span></footer></section><section class="page"><h1>5.4 Hugging Face Token Setup</h1><p>Create a free Hugging Face account, open Settings, create an Access Token with read permission and set it as environment variable HF_TOKEN. The token must not be written inside source code.</p><footer><span>DEPARTMENT OF AIML</span><span>49</span></footer></section><section class="page"><h1>5.5 Streamlit UI Implementation</h1><p>The Streamlit application uses tabs and sidebar controls. The Live Emotion Studio tab performs analysis. The Mascot Chat tab handles conversation. The Training tab performs EfficientNetV2-S training. The Twin Memory tab displays logs and catalog.</p><footer><span>DEPARTMENT OF AIML</span><span>50</span></footer></section><section class="page"><h1>5.6 Text Emotion Implementation</h1><p>The implementation loads AutoTokenizer and AutoModelForSequenceClassification from transformers. It runs softmax inference using PyTorch tensors. If models cannot load, heuristic keywords keep the app functional.</p><footer><span>DEPARTMENT OF AIML</span><span>51</span></footer></section><section class="page"><h1>5.7 Voice Emotion Implementation</h1><p>The implementation uses SpeechRecognition to process WAV audio. Voice tone is approximated through waveform energy. The transcript passes into text emotion analysis, allowing combined semantic and acoustic reasoning.</p><footer><span>DEPARTMENT OF AIML</span><span>52</span></footer></section><section class="page"><h1>5.8 Facial Emotion Implementation</h1><p>The implementation uses OpenCV face detection and PyTorch EfficientNetV2-S classifier. It supports model checkpoints stored as emotion_efficientnet_v2_s.pth and metadata stored as JSON.</p><footer><span>DEPARTMENT OF AIML</span><span>53</span></footer></section><section class="page"><h1>5.9 Grad-CAM Implementation</h1><p>The Grad-CAM function identifies the last convolutional module, registers hooks, computes gradients, averages them spatially, forms a heatmap and overlays it over the detected face region.</p><footer><span>DEPARTMENT OF AIML</span><span>54</span></footer></section><section class="page"><h1>5.10 Animated Mascot Implementation</h1><p>The mascot is implemented through HTML and CSS inside Streamlit. Mood changes modify background color, face color, glow, eye style and mouth curve. It is lightweight and does not require a separate 3D engine.</p><footer><span>DEPARTMENT OF AIML</span><span>55</span></footer></section><section class="page"><h1>5.11 Chatbot Response Implementation</h1><p>The chatbot response pipeline prepares a structured prompt containing the mood, tone, intent and twin summary. If Hugging Face API returns a response, it is displayed. Otherwise the local emotional coach generates a deterministic response.</p><footer><span>DEPARTMENT OF AIML</span><span>56</span></footer></section><section class="page"><h1>5.12 Digital Twin Implementation</h1><p>The digital twin is a CSV log containing user, timestamp, modality moods, fused mood, score, recommendation, chat query, chat reply and feedback. It helps personalize later recommendations.</p><footer><span>DEPARTMENT OF AIML</span><span>57</span></footer></section><section class="page"><h1>5.13 Training Pipeline</h1><p>The training pipeline reads image folders, constructs a FolderDataset, loads EfficientNetV2-S pretrained weights, optionally freezes the backbone, trains with AdamW and CrossEntropyLoss and saves a .pth checkpoint.</p><footer><span>DEPARTMENT OF AIML</span><span>58</span></footer></section><section class="page"><h1>5.14 Screenshots to Capture</h1><p>The student should capture screenshots of the Streamlit home screen, webcam emotion result, Grad-CAM heatmap, mascot chat response, training metadata, twin memory table and setup guide tab after running the app.</p><footer><span>DEPARTMENT OF AIML</span><span>59</span></footer></section><section class="page"><h1>5.15 Implementation Safety</h1><p>The implementation contains no hardcoded API key. Any token pasted during experimentation must be revoked and replaced with an environment variable. This is part of safe software engineering practice.</p><footer><span>DEPARTMENT OF AIML</span><span>60</span></footer></section><section class="page"><h1>CHAPTER 6: TESTING</h1><p>Testing verifies whether the software meets functional and non-functional requirements. Since the project is an AI-enabled application, testing includes execution checks, modality checks, fallback checks, ethical warnings and usability checks.</p><footer><span>DEPARTMENT OF AIML</span><span>61</span></footer></section><section class="page"><h1>6.1 Test Strategy</h1><p>The strategy combines unit-style function checks, integration checks through Streamlit, manual UI testing, model fallback testing and dataset-path testing. The objective is demo readiness rather than production clinical validation.</p><footer><span>DEPARTMENT OF AIML</span><span>62</span></footer></section><section class="page"><h1>6.2 Test Case 1: Application Launch</h1><p>Input: streamlit run app.py. Expected Result: Streamlit opens in the browser and shows all tabs. Status: Pass when dependencies are installed correctly.</p><footer><span>DEPARTMENT OF AIML</span><span>63</span></footer></section><section class="page"><h1>6.3 Test Case 2: Text Emotion</h1><p>Input: I feel stressed about my exam. Expected Result: text mood becomes sad or energetic, intent becomes stress_relief or study_focus, confidence is shown and chatbot asks reflective questions.</p><footer><span>DEPARTMENT OF AIML</span><span>64</span></footer></section><section class="page"><h1>6.4 Test Case 3: Voice Input</h1><p>Input: recorded WAV speech. Expected Result: transcript is shown when SpeechRecognition succeeds, energy is computed and voice mood contributes to fusion.</p><footer><span>DEPARTMENT OF AIML</span><span>65</span></footer></section><section class="page"><h1>6.5 Test Case 4: Face Image</h1><p>Input: webcam capture. Expected Result: a face box is detected, method is trained_efficientnet_v2_s when checkpoint exists or opencv_heuristic otherwise, and an image is displayed.</p><footer><span>DEPARTMENT OF AIML</span><span>66</span></footer></section><section class="page"><h1>6.6 Test Case 5: Fusion</h1><p>Input: happy emoji, positive text and smiling face. Expected Result: fused mood tends toward happy and mascot changes to happy visual state.</p><footer><span>DEPARTMENT OF AIML</span><span>67</span></footer></section><section class="page"><h1>6.7 Test Case 6: Recommendation</h1><p>Input: fused sad mood. Expected Result: system recommends sad/comfort/calm resource and stores exposure in recommender_stats.csv.</p><footer><span>DEPARTMENT OF AIML</span><span>68</span></footer></section><section class="page"><h1>6.8 Test Case 7: Chatbot</h1><p>Input: How can I handle pressure before presentation? Expected Result: response includes one reflection, exactly three questions and one next action.</p><footer><span>DEPARTMENT OF AIML</span><span>69</span></footer></section><section class="page"><h1>6.9 Test Case 8: Training</h1><p>Input: dataset/train with at least two class folders. Expected Result: EfficientNetV2-S training starts and saves emotion_efficientnet_v2_s.pth.</p><footer><span>DEPARTMENT OF AIML</span><span>70</span></footer></section><section class="page"><h1>6.10 Test Case 9: Token Missing</h1><p>Input: no HF_TOKEN set. Expected Result: local coach fallback works and application does not crash.</p><footer><span>DEPARTMENT OF AIML</span><span>71</span></footer></section><section class="page"><h1>6.11 Test Case 10: Security</h1><p>Input: repository scan. Expected Result: no hardcoded hf_ token appears in app.py or report files.</p><footer><span>DEPARTMENT OF AIML</span><span>72</span></footer></section><section class="page"><h1>6.12 Validation Metrics</h1><p>The training pipeline can compute accuracy through class prediction. Confusion matrix, precision, recall and F1 score can be added after a balanced validation dataset is available.</p><footer><span>DEPARTMENT OF AIML</span><span>73</span></footer></section><section class="page"><h1>6.13 Risk and Mitigation</h1><p>Risks include camera permission failure, microphone failure, API downtime, insufficient dataset and overconfident interpretation. Mitigations include fallbacks, ethical warnings, local coach and clear non-diagnostic wording.</p><footer><span>DEPARTMENT OF AIML</span><span>74</span></footer></section><section class="page"><h1>CHAPTER 7: SUMMARY AND CONCLUSION</h1><p>The project successfully demonstrates a major-project-level AI system that combines multimodal emotion analysis and an animated mascot chatbot in a single Python file.</p><footer><span>DEPARTMENT OF AIML</span><span>75</span></footer></section><section class="page"><h1>7.1 Summary</h1><p>The application integrates PyTorch EfficientNetV2-S, Grad-CAM, Hugging Face Transformers, NLTK, SpeechRecognition, OpenCV and Streamlit. It meets the requirement of avoiding TensorFlow, Keras and paid APIs.</p><footer><span>DEPARTMENT OF AIML</span><span>76</span></footer></section><section class="page"><h1>7.2 Technical Achievement</h1><p>The technical achievement is the fusion of four input modes with transparent score display and a non-generic chatbot response engine. The system is explainable through Grad-CAM and auditable through CSV logs.</p><footer><span>DEPARTMENT OF AIML</span><span>77</span></footer></section><section class="page"><h1>7.3 Academic Contribution</h1><p>The project connects deep learning, natural language processing, human-computer interaction, recommender systems and ethical AI. It is suitable for a viva because each module has a clear purpose and can be demonstrated separately.</p><footer><span>DEPARTMENT OF AIML</span><span>78</span></footer></section><section class="page"><h1>7.4 Conclusion</h1><p>The Emotionally Intelligent Animated Mascot Chatbot provides a practical and innovative demonstration of cognitive emotional intelligence in a student-friendly environment. It is not a medical tool, but it shows how emotionally aware AI can provide safer and more personalized support.</p><footer><span>DEPARTMENT OF AIML</span><span>79</span></footer></section><section class="page"><h1>CHAPTER 8: LIMITATIONS OF THE PROJECT AND FUTURE WORK</h1><p>Every AI project has limitations. The proposed application is a strong academic prototype, but real-world deployment would require larger datasets, stronger validation, privacy review and user studies.</p><footer><span>DEPARTMENT OF AIML</span><span>80</span></footer></section><section class="page"><h1>8.1 Limitations</h1><p>Facial emotion recognition can be biased by lighting, camera angle and dataset imbalance. Voice emotion estimation uses transcript and energy rather than a dedicated speech-emotion transformer. Hugging Face free API may be unavailable or rate limited. The mascot is CSS-based rather than a full VRM 3D model.</p><footer><span>DEPARTMENT OF AIML</span><span>81</span></footer></section><section class="page"><h1>8.2 Future Work</h1><p>Future work can include full VRM avatar support, lip synchronization, multilingual emotion models, dedicated speech-emotion recognition, stronger reinforcement learning recommendation, FER2025 dataset training, mobile APK packaging and secure cloud deployment.</p><footer><span>DEPARTMENT OF AIML</span><span>82</span></footer></section><section class="page"><h1>8.3 Mobile and APK Scope</h1><p>A free practical route is to host Streamlit and add it to Android home screen as a progressive app-like experience. A later WebView wrapper can convert the hosted URL into an Android APK.</p><footer><span>DEPARTMENT OF AIML</span><span>83</span></footer></section><section class="page"><h1>8.4 Research Scope</h1><p>The system can be extended using larger multimodal datasets such as MER2023, MER2024 and recent facial expression datasets, subject to license and access. Evaluation can include macro F1, AUC, latency, usability and user satisfaction.</p><footer><span>DEPARTMENT OF AIML</span><span>84</span></footer></section><section class="page"><h1>Bibliography</h1><p>[1] R. W. Picard, Affective Computing, MIT Press, 1997.</p><p>[2] A. Vaswani et al., Attention Is All You Need, Advances in Neural Information Processing Systems, 2017.</p><p>[3] M. Tan and Q. V. Le, EfficientNetV2: Smaller Models and Faster Training, International Conference on Machine Learning, 2021.</p><p>[4] R. R. Selvaraju et al., Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, IEEE International Conference on Computer Vision, 2017.</p><p>[5] T. Wolf et al., Transformers: State-of-the-Art Natural Language Processing, Conference on Empirical Methods in Natural Language Processing: System Demonstrations, 2020.</p><p>[6] S. Bird, E. Klein and E. Loper, Natural Language Processing with Python, O&#x27;Reilly Media, 2009.</p><p>[7] I. J. Goodfellow et al., Challenges in Representation Learning: A Report on Three Machine Learning Contests, Neural Networks, 2015.</p><p>[8] P. Ekman and W. V. Friesen, Constants across Cultures in the Face and Emotion, Journal of Personality and Social Psychology, 1971.</p><p>[9] A. Paszke et al., PyTorch: An Imperative Style, High-Performance Deep Learning Library, Advances in Neural Information Processing Systems, 2019.</p><p>[10] Streamlit Inc., Streamlit Documentation, 2026.</p><footer><span>DEPARTMENT OF AIML</span><span>85</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 1</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0001: from __future__ import annotations
+0002: 
+0003: import csv
+0004: import html
+0005: import io
+0006: import json
+0007: import os
+0008: import random
+0009: import re
+0010: import textwrap
+0011: import urllib.error
+0012: import urllib.request
+0013: import wave
+0014: from collections import Counter
+0015: from dataclasses import asdict, dataclass
+0016: from datetime import datetime
+0017: from functools import lru_cache
+0018: from pathlib import Path
+0019: from typing import Any
+0020: 
+0021: import numpy as np
+0022: 
+0023: try:
+0024:     import cv2
+0025: except Exception:
+0026:     cv2 = None
+0027: 
+0028: try:
+0029:     import nltk
+0030:     from nltk.corpus import wordnet as wn
+0031:     NLTK_AVAILABLE = True
+0032: except Exception:
+0033:     nltk = None
+0034:     wn = None</pre><footer><span>DEPARTMENT OF AIML</span><span>86</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 2</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0035:     NLTK_AVAILABLE = False
+0036: 
+0037: try:
+0038:     import pyttsx3
+0039: except Exception:
+0040:     pyttsx3 = None
+0041: 
+0042: try:
+0043:     import speech_recognition as sr
+0044: except Exception:
+0045:     sr = None
+0046: 
+0047: try:
+0048:     import streamlit as st
+0049: except Exception:
+0050:     st = None
+0051: 
+0052: try:
+0053:     import torch
+0054:     import torch.nn as nn
+0055:     from torch.utils.data import DataLoader, Dataset
+0056:     from torchvision.models import EfficientNet_V2_S_Weights, efficientnet_v2_s
+0057:     TORCH_AVAILABLE = True
+0058: except Exception:
+0059:     torch = None
+0060:     nn = None
+0061:     DataLoader = None
+0062:     Dataset = object
+0063:     EfficientNet_V2_S_Weights = None
+0064:     efficientnet_v2_s = None
+0065:     TORCH_AVAILABLE = False
+0066: 
+0067: try:
+0068:     from transformers import AutoModelForSequenceClassification, AutoTokenizer</pre><footer><span>DEPARTMENT OF AIML</span><span>87</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 3</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0069:     from transformers.utils import logging as hf_logging
+0070:     hf_logging.set_verbosity_error()
+0071:     TRANSFORMERS_AVAILABLE = True
+0072: except Exception:
+0073:     AutoModelForSequenceClassification = None
+0074:     AutoTokenizer = None
+0075:     TRANSFORMERS_AVAILABLE = False
+0076: 
+0077: 
+0078: APP_TITLE = &quot;Emotionally Intelligent Animated Mascot Chatbot&quot;
+0079: APP_SUBTITLE = &quot;PyTorch EfficientNetV2-S, Grad-CAM, voice, face, text emotion fusion, and free Hugging Face API chat.&quot;
+0080: BASE_DIR = Path(__file__).resolve().parent if &quot;__file__&quot; in globals() else Path.cwd()
+0081: MODEL_DIR = BASE_DIR / &quot;models&quot;
+0082: DATASET_DIR = BASE_DIR / &quot;dataset&quot;
+0083: MODEL_PATH = MODEL_DIR / &quot;emotion_efficientnet_v2_s.pth&quot;
+0084: MODEL_META_PATH = MODEL_DIR / &quot;emotion_efficientnet_v2_s.json&quot;
+0085: TWIN_LOG_PATH = BASE_DIR / &quot;cei_twin_log.csv&quot;
+0086: RECOMMENDER_STATS_PATH = BASE_DIR / &quot;recommender_stats.csv&quot;
+0087: CATALOG_EXPORT_PATH = BASE_DIR / &quot;resource_catalog.csv&quot;
+0088: IMAGE_EXTENSIONS = {&quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.bmp&quot;, &quot;.webp&quot;}
+0089: 
+0090: HF_TOKEN = os.getenv(&quot;HF_TOKEN&quot;, &quot;&quot;).strip() or os.getenv(&quot;HUGGINGFACEHUB_API_TOKEN&quot;, &quot;&quot;).strip()
+0091: HF_CHAT_MODEL = os.getenv(&quot;HF_CHAT_MODEL&quot;, &quot;google/flan-t5-small&quot;).strip() or &quot;google/flan-t5-small&quot;
+0092: TEXT_EMOTION_MODEL = os.getenv(&quot;TEXT_EMOTION_MODEL&quot;, &quot;j-hartmann/emotion-english-distilroberta-base&quot;).strip()
+0093: TEXT_SENTIMENT_MODEL = os.getenv(&quot;TEXT_SENTIMENT_MODEL&quot;, &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;).strip()
+0094: 
+0095: MOOD_CHOICES = [&quot;happy&quot;, &quot;sad&quot;, &quot;calm&quot;, &quot;energetic&quot;]
+0096: EMOJI_MAP = {
+0097:     &quot;happy&quot;: &quot;happy&quot;,
+0098:     &quot;sad&quot;: &quot;sad&quot;,
+0099:     &quot;calm&quot;: &quot;calm&quot;,
+0100:     &quot;energetic&quot;: &quot;energetic&quot;,
+0101: }
+0102: EMOTION_TO_MOOD = {</pre><footer><span>DEPARTMENT OF AIML</span><span>88</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 4</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0103:     &quot;happy&quot;: &quot;happy&quot;, &quot;joy&quot;: &quot;happy&quot;, &quot;love&quot;: &quot;happy&quot;, &quot;positive&quot;: &quot;happy&quot;,
+0104:     &quot;surprise&quot;: &quot;energetic&quot;, &quot;excitement&quot;: &quot;energetic&quot;, &quot;angry&quot;: &quot;energetic&quot;,
+0105:     &quot;anger&quot;: &quot;energetic&quot;, &quot;frustration&quot;: &quot;energetic&quot;,
+0106:     &quot;fear&quot;: &quot;sad&quot;, &quot;sad&quot;: &quot;sad&quot;, &quot;sadness&quot;: &quot;sad&quot;, &quot;negative&quot;: &quot;sad&quot;,
+0107:     &quot;neutral&quot;: &quot;calm&quot;, &quot;calm&quot;: &quot;calm&quot;, &quot;relaxed&quot;: &quot;calm&quot;,
+0108: }
+0109: DEFAULT_FACE_CLASSES = [&quot;angry&quot;, &quot;disgust&quot;, &quot;fear&quot;, &quot;happy&quot;, &quot;neutral&quot;, &quot;sad&quot;, &quot;surprise&quot;]
+0110: 
+0111: FALLBACK_ACTIONS = {
+0112:     &quot;happy&quot;: &quot;Write one win, one gratitude point, and one next meaningful goal.&quot;,
+0113:     &quot;sad&quot;: &quot;Do two minutes of slow breathing, drink water, and message one trusted person.&quot;,
+0114:     &quot;calm&quot;: &quot;Protect this state with one low-distraction focus sprint.&quot;,
+0115:     &quot;energetic&quot;: &quot;Channel your energy into one important task or a short movement break.&quot;,
+0116: }
+0117: MOOD_QUESTION_BANK = {
+0118:     &quot;happy&quot;: [&quot;What created this positive shift?&quot;, &quot;How can you repeat it?&quot;, &quot;Who can you share this progress with?&quot;],
+0119:     &quot;sad&quot;: [&quot;What feels heaviest right now?&quot;, &quot;What helped last time?&quot;, &quot;What tiny step can make the next hour easier?&quot;],
+0120:     &quot;calm&quot;: [&quot;What is protecting your balance?&quot;, &quot;Which routine is helping focus?&quot;, &quot;What boundary will maintain calm?&quot;],
+0121:     &quot;energetic&quot;: [&quot;Is the energy useful or overloaded?&quot;, &quot;Which priority deserves it first?&quot;, &quot;What boundary keeps it healthy?&quot;],
+0122: }
+0123: TONE_GUIDES = {
+0124:     &quot;Therapist&quot;: &quot;Warm, reflective, structured, and non-diagnostic.&quot;,
+0125:     &quot;Friendly&quot;: &quot;Natural, caring, and specific.&quot;,
+0126:     &quot;Motivational&quot;: &quot;Positive, action-oriented, and disciplined.&quot;,
+0127: }
+0128: INTENT_SEEDS = {
+0129:     &quot;stress_relief&quot;: {&quot;stress&quot;, &quot;overwhelmed&quot;, &quot;pressure&quot;, &quot;anxious&quot;, &quot;burnout&quot;},
+0130:     &quot;motivation&quot;: {&quot;motivation&quot;, &quot;discipline&quot;, &quot;goal&quot;, &quot;progress&quot;, &quot;improve&quot;},
+0131:     &quot;study_focus&quot;: {&quot;study&quot;, &quot;exam&quot;, &quot;assignment&quot;, &quot;project&quot;, &quot;focus&quot;},
+0132:     &quot;confidence&quot;: {&quot;confidence&quot;, &quot;presentation&quot;, &quot;interview&quot;, &quot;fear&quot;, &quot;nervous&quot;},
+0133:     &quot;loneliness&quot;: {&quot;alone&quot;, &quot;lonely&quot;, &quot;isolated&quot;, &quot;empty&quot;},
+0134:     &quot;self_reflection&quot;: {&quot;reflect&quot;, &quot;journal&quot;, &quot;understand&quot;, &quot;meaning&quot;},
+0135: }
+0136: </pre><footer><span>DEPARTMENT OF AIML</span><span>89</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 5</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0137: 
+0138: @dataclass(frozen=True)
+0139: class CatalogEntry:
+0140:     id: str
+0141:     mood: str
+0142:     title: str
+0143:     url: str
+0144:     source: str
+0145:     resource_type: str
+0146:     playable: bool
+0147:     tags: str
+0148:     offline_fallback: str
+0149: 
+0150: 
+0151: def require_streamlit() -&gt; None:
+0152:     if st is None:
+0153:         raise RuntimeError(&quot;Streamlit is not installed. Run: streamlit run app.py&quot;)
+0154: 
+0155: 
+0156: def utc_now() -&gt; str:
+0157:     return datetime.utcnow().isoformat()
+0158: 
+0159: 
+0160: def slugify(value: str) -&gt; str:
+0161:     text = re.sub(r&quot;[^a-zA-Z0-9]+&quot;, &quot;_&quot;, str(value).strip().lower())
+0162:     return text.strip(&quot;_&quot;) or &quot;unknown&quot;
+0163: 
+0164: 
+0165: def ensure_csv(path: Path, headers: list[str]) -&gt; None:
+0166:     if path.exists():
+0167:         return
+0168:     with path.open(&quot;w&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as handle:
+0169:         writer = csv.DictWriter(handle, fieldnames=headers)
+0170:         writer.writeheader()</pre><footer><span>DEPARTMENT OF AIML</span><span>90</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 6</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0171: 
+0172: 
+0173: def ensure_runtime_files() -&gt; None:
+0174:     MODEL_DIR.mkdir(parents=True, exist_ok=True)
+0175:     DATASET_DIR.mkdir(parents=True, exist_ok=True)
+0176:     ensure_csv(TWIN_LOG_PATH, [
+0177:         &quot;User&quot;, &quot;TimeUTC&quot;, &quot;FaceLabel&quot;, &quot;FaceMood&quot;, &quot;VoiceMood&quot;, &quot;TextMood&quot;, &quot;EmojiMood&quot;,
+0178:         &quot;FusedMood&quot;, &quot;StateScore&quot;, &quot;ToneMode&quot;, &quot;RecommendedId&quot;, &quot;RecommendedTitle&quot;,
+0179:         &quot;RecommendedUrl&quot;, &quot;RecommendedSource&quot;, &quot;ChatQuery&quot;, &quot;ChatReply&quot;, &quot;Feedback&quot;,
+0180:     ])
+0181:     ensure_csv(RECOMMENDER_STATS_PATH, [&quot;ItemId&quot;, &quot;Exposures&quot;, &quot;Likes&quot;, &quot;Skips&quot;, &quot;LastShown&quot;, &quot;LastFeedback&quot;])
+0182: 
+0183: 
+0184: def read_rows(path: Path) -&gt; list[dict[str, str]]:
+0185:     if not path.exists():
+0186:         return []
+0187:     with path.open(&quot;r&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as handle:
+0188:         return list(csv.DictReader(handle))
+0189: 
+0190: 
+0191: def write_rows(path: Path, headers: list[str], rows: list[dict[str, Any]]) -&gt; None:
+0192:     with path.open(&quot;w&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as handle:
+0193:         writer = csv.DictWriter(handle, fieldnames=headers)
+0194:         writer.writeheader()
+0195:         for row in rows:
+0196:             writer.writerow({h: row.get(h, &quot;&quot;) for h in headers})
+0197: 
+0198: 
+0199: def append_row(path: Path, headers: list[str], row: dict[str, Any]) -&gt; None:
+0200:     exists = path.exists()
+0201:     with path.open(&quot;a&quot;, newline=&quot;&quot;, encoding=&quot;utf-8&quot;) as handle:
+0202:         writer = csv.DictWriter(handle, fieldnames=headers)
+0203:         if not exists:
+0204:             writer.writeheader()</pre><footer><span>DEPARTMENT OF AIML</span><span>91</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 7</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0205:         writer.writerow({h: row.get(h, &quot;&quot;) for h in headers})
+0206: 
+0207: 
+0208: @lru_cache(maxsize=1)
+0209: def build_resource_catalog() -&gt; tuple[CatalogEntry, ...]:
+0210:     direct = {
+0211:         &quot;happy&quot;: [&quot;feel good playlist&quot;, &quot;gratitude meditation&quot;, &quot;confidence boost&quot;],
+0212:         &quot;sad&quot;: [&quot;self compassion meditation&quot;, &quot;comfort songs&quot;, &quot;gentle piano healing&quot;],
+0213:         &quot;calm&quot;: [&quot;lofi focus session&quot;, &quot;rain sounds for study&quot;, &quot;mindful breathing guide&quot;],
+0214:         &quot;energetic&quot;: [&quot;workout motivation mix&quot;, &quot;focus sprint soundtrack&quot;, &quot;productivity music&quot;],
+0215:     }
+0216:     entries: list[CatalogEntry] = []
+0217:     for mood, queries in direct.items():
+0218:         for index, query in enumerate(queries, start=1):
+0219:             for source, base in [
+0220:                 (&quot;YouTube&quot;, &quot;https://www.youtube.com/results?search_query=&quot;),
+0221:                 (&quot;Spotify&quot;, &quot;https://open.spotify.com/search/&quot;),
+0222:                 (&quot;YouTube Music&quot;, &quot;https://music.youtube.com/search?q=&quot;),
+0223:             ]:
+0224:                 entries.append(CatalogEntry(
+0225:                     id=f&quot;{mood}_{slugify(source)}_{index}&quot;,
+0226:                     mood=mood,
+0227:                     title=f&quot;{mood.title()} {source} resource: {query.title()}&quot;,
+0228:                     url=base + urllib.parse.quote_plus(query),
+0229:                     source=source,
+0230:                     resource_type=&quot;public_search&quot;,
+0231:                     playable=False,
+0232:                     tags=f&quot;{mood},{slugify(query)}&quot;,
+0233:                     offline_fallback=FALLBACK_ACTIONS[mood],
+0234:                 ))
+0235:     return tuple(entries)
+0236: 
+0237: 
+0238: def catalog_rows() -&gt; list[dict[str, Any]]:</pre><footer><span>DEPARTMENT OF AIML</span><span>92</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 8</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0239:     return [asdict(item) for item in build_resource_catalog()]
+0240: 
+0241: 
+0242: def export_catalog(path: Path = CATALOG_EXPORT_PATH) -&gt; Path:
+0243:     rows = catalog_rows()
+0244:     if rows:
+0245:         write_rows(path, list(rows[0].keys()), rows)
+0246:     return path
+0247: 
+0248: 
+0249: def get_recommender_stats() -&gt; list[dict[str, str]]:
+0250:     ensure_runtime_files()
+0251:     return read_rows(RECOMMENDER_STATS_PATH)
+0252: 
+0253: 
+0254: def upsert_feedback(item_id: str, feedback: str = &quot;shown&quot;) -&gt; None:
+0255:     rows = get_recommender_stats()
+0256:     headers = [&quot;ItemId&quot;, &quot;Exposures&quot;, &quot;Likes&quot;, &quot;Skips&quot;, &quot;LastShown&quot;, &quot;LastFeedback&quot;]
+0257:     row = next((r for r in rows if r.get(&quot;ItemId&quot;) == item_id), None)
+0258:     if row is None:
+0259:         row = {&quot;ItemId&quot;: item_id, &quot;Exposures&quot;: &quot;0&quot;, &quot;Likes&quot;: &quot;0&quot;, &quot;Skips&quot;: &quot;0&quot;, &quot;LastShown&quot;: &quot;&quot;, &quot;LastFeedback&quot;: &quot;&quot;}
+0260:         rows.append(row)
+0261:     exposures = int(row.get(&quot;Exposures&quot;, &quot;0&quot;) or 0)
+0262:     likes = int(row.get(&quot;Likes&quot;, &quot;0&quot;) or 0)
+0263:     skips = int(row.get(&quot;Skips&quot;, &quot;0&quot;) or 0)
+0264:     if feedback == &quot;shown&quot;:
+0265:         exposures += 1
+0266:         row[&quot;LastShown&quot;] = utc_now()
+0267:     elif feedback == &quot;liked&quot;:
+0268:         likes += 1
+0269:         row[&quot;LastFeedback&quot;] = &quot;liked&quot;
+0270:     elif feedback == &quot;skipped&quot;:
+0271:         skips += 1
+0272:         row[&quot;LastFeedback&quot;] = &quot;skipped&quot;</pre><footer><span>DEPARTMENT OF AIML</span><span>93</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 9</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0273:     row.update({&quot;Exposures&quot;: str(exposures), &quot;Likes&quot;: str(likes), &quot;Skips&quot;: str(skips)})
+0274:     write_rows(RECOMMENDER_STATS_PATH, headers, rows)
+0275: 
+0276: 
+0277: def user_history(user: str) -&gt; list[str]:
+0278:     return [r.get(&quot;RecommendedId&quot;, &quot;&quot;) for r in read_rows(TWIN_LOG_PATH) if r.get(&quot;User&quot;) == user and r.get(&quot;RecommendedId&quot;)]
+0279: 
+0280: 
+0281: def recommend_item(user: str, mood: str, last_n: int = 5) -&gt; dict[str, Any]:
+0282:     candidates = [r for r in catalog_rows() if r[&quot;mood&quot;] == mood] or catalog_rows()
+0283:     recent = set(user_history(user)[-last_n:])
+0284:     stats = {r[&quot;ItemId&quot;]: r for r in get_recommender_stats()}
+0285:     scored: list[tuple[float, dict[str, Any]]] = []
+0286:     for item in candidates:
+0287:         s = stats.get(item[&quot;id&quot;], {})
+0288:         exposures = int(s.get(&quot;Exposures&quot;, &quot;0&quot;) or 0)
+0289:         likes = int(s.get(&quot;Likes&quot;, &quot;0&quot;) or 0)
+0290:         skips = int(s.get(&quot;Skips&quot;, &quot;0&quot;) or 0)
+0291:         score = 0.35 / (exposures + 1) + 0.45 * likes / max(exposures, 1) - 0.20 * skips / max(exposures, 1)
+0292:         score -= 0.50 if item[&quot;id&quot;] in recent else 0.0
+0293:         score += random.uniform(0.0, 0.05)
+0294:         scored.append((score, item))
+0295:     scored.sort(key=lambda p: p[0], reverse=True)
+0296:     choice = scored[0][1]
+0297:     upsert_feedback(choice[&quot;id&quot;], &quot;shown&quot;)
+0298:     return choice
+0299: 
+0300: 
+0301: def log_interaction(user: str, face_label: str, face_mood: str, voice_mood: str, text_mood: str, emoji_mood: str,
+0302:                     fused_mood: str, state_score: float, tone_mode: str, recommendation: dict[str, Any],
+0303:                     chat_query: str = &quot;&quot;, chat_reply: str = &quot;&quot;, feedback: str = &quot;&quot;) -&gt; None:
+0304:     append_row(TWIN_LOG_PATH, [
+0305:         &quot;User&quot;, &quot;TimeUTC&quot;, &quot;FaceLabel&quot;, &quot;FaceMood&quot;, &quot;VoiceMood&quot;, &quot;TextMood&quot;, &quot;EmojiMood&quot;,
+0306:         &quot;FusedMood&quot;, &quot;StateScore&quot;, &quot;ToneMode&quot;, &quot;RecommendedId&quot;, &quot;RecommendedTitle&quot;,</pre><footer><span>DEPARTMENT OF AIML</span><span>94</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 10</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0307:         &quot;RecommendedUrl&quot;, &quot;RecommendedSource&quot;, &quot;ChatQuery&quot;, &quot;ChatReply&quot;, &quot;Feedback&quot;,
+0308:     ], {
+0309:         &quot;User&quot;: user, &quot;TimeUTC&quot;: utc_now(), &quot;FaceLabel&quot;: face_label, &quot;FaceMood&quot;: face_mood,
+0310:         &quot;VoiceMood&quot;: voice_mood, &quot;TextMood&quot;: text_mood, &quot;EmojiMood&quot;: emoji_mood, &quot;FusedMood&quot;: fused_mood,
+0311:         &quot;StateScore&quot;: f&quot;{state_score:.4f}&quot;, &quot;ToneMode&quot;: tone_mode,
+0312:         &quot;RecommendedId&quot;: recommendation.get(&quot;id&quot;, &quot;&quot;), &quot;RecommendedTitle&quot;: recommendation.get(&quot;title&quot;, &quot;&quot;),
+0313:         &quot;RecommendedUrl&quot;: recommendation.get(&quot;url&quot;, &quot;&quot;), &quot;RecommendedSource&quot;: recommendation.get(&quot;source&quot;, &quot;&quot;),
+0314:         &quot;ChatQuery&quot;: chat_query, &quot;ChatReply&quot;: chat_reply, &quot;Feedback&quot;: feedback,
+0315:     })
+0316: 
+0317: 
+0318: def twin_summary(user: str, limit: int = 12) -&gt; str:
+0319:     rows = [r for r in read_rows(TWIN_LOG_PATH) if r.get(&quot;User&quot;) == user]
+0320:     if not rows:
+0321:         return &quot;No digital emotional twin history is available yet.&quot;
+0322:     moods = [r.get(&quot;FusedMood&quot;, &quot;calm&quot;) for r in rows[-limit:]]
+0323:     dominant = Counter(moods).most_common(1)[0][0]
+0324:     return f&quot;Dominant mood: {dominant}. Recent sequence: {&#x27;, &#x27;.join(moods[-5:])}.&quot;
+0325: 
+0326: 
+0327: def normalize_label_to_mood(label: str) -&gt; str:
+0328:     token = slugify(label).replace(&quot;_&quot;, &quot; &quot;)
+0329:     for key, mood in EMOTION_TO_MOOD.items():
+0330:         if key in token:
+0331:             return mood
+0332:     return &quot;calm&quot;
+0333: 
+0334: 
+0335: def tokenize_words(text: str) -&gt; list[str]:
+0336:     return re.findall(r&quot;[a-zA-Z&#x27;]+&quot;, text.lower())
+0337: 
+0338: 
+0339: def ensure_nltk_resources() -&gt; None:
+0340:     if not NLTK_AVAILABLE:</pre><footer><span>DEPARTMENT OF AIML</span><span>95</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 11</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0341:         return
+0342:     for corpus in (&quot;wordnet&quot;, &quot;omw-1.4&quot;):
+0343:         try:
+0344:             nltk.data.find(f&quot;corpora/{corpus}&quot;)
+0345:         except LookupError:
+0346:             try:
+0347:                 nltk.download(corpus, quiet=True)
+0348:             except Exception:
+0349:                 return
+0350: 
+0351: 
+0352: @lru_cache(maxsize=256)
+0353: def synonyms(word: str) -&gt; tuple[str, ...]:
+0354:     if not NLTK_AVAILABLE:
+0355:         return tuple()
+0356:     ensure_nltk_resources()
+0357:     found: list[str] = []
+0358:     try:
+0359:         for synset in wn.synsets(word):
+0360:             for lemma in synset.lemmas():
+0361:                 candidate = lemma.name().replace(&quot;_&quot;, &quot; &quot;).lower().strip()
+0362:                 if candidate and candidate != word.lower() and candidate not in found:
+0363:                     found.append(candidate)
+0364:                 if len(found) &gt;= 8:
+0365:                     return tuple(found)
+0366:     except Exception:
+0367:         return tuple()
+0368:     return tuple(found)
+0369: 
+0370: 
+0371: def infer_intent(text: str) -&gt; dict[str, Any]:
+0372:     tokens = set(tokenize_words(text))
+0373:     best_intent = &quot;general_support&quot;
+0374:     best_score = 0</pre><footer><span>DEPARTMENT OF AIML</span><span>96</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 12</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0375:     best_hits: list[str] = []
+0376:     for intent, seeds in INTENT_SEEDS.items():
+0377:         expanded = set(seeds)
+0378:         for seed in seeds:
+0379:             expanded.update(tokenize_words(&quot; &quot;.join(synonyms(seed))))
+0380:         hits = sorted(tokens.intersection(expanded))
+0381:         if len(hits) &gt; best_score:
+0382:             best_intent, best_score, best_hits = intent, len(hits), hits
+0383:     preview = sorted({s for t in list(tokens)[:6] for s in synonyms(t)[:2]})[:8]
+0384:     return {&quot;intent&quot;: best_intent, &quot;matched_terms&quot;: best_hits, &quot;synonyms_preview&quot;: preview}
+0385: 
+0386: 
+0387: @lru_cache(maxsize=1)
+0388: def load_classifier(model_name: str):
+0389:     if not TRANSFORMERS_AVAILABLE or not TORCH_AVAILABLE:
+0390:         return None, None
+0391:     try:
+0392:         tokenizer = AutoTokenizer.from_pretrained(model_name)
+0393:         model = AutoModelForSequenceClassification.from_pretrained(model_name)
+0394:         model.eval()
+0395:         return tokenizer, model
+0396:     except Exception:
+0397:         return None, None
+0398: 
+0399: 
+0400: def classify_text(model_name: str, text: str) -&gt; tuple[str, float, dict[str, float]]:
+0401:     tokenizer, model = load_classifier(model_name)
+0402:     if tokenizer is None or model is None or not TORCH_AVAILABLE:
+0403:         return &quot;&quot;, 0.0, {}
+0404:     with torch.no_grad():
+0405:         encoded = tokenizer(text[:512], return_tensors=&quot;pt&quot;, truncation=True)
+0406:         logits = model(**encoded).logits
+0407:         probs = torch.softmax(logits, dim=1).detach().cpu().numpy()[0]
+0408:     labels = model.config.id2label if hasattr(model, &quot;config&quot;) else {}</pre><footer><span>DEPARTMENT OF AIML</span><span>97</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 13</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0409:     all_scores = {str(labels.get(i, f&quot;class_{i}&quot;)): float(p) for i, p in enumerate(probs)}
+0410:     label = max(all_scores, key=all_scores.get)
+0411:     return label, all_scores[label], all_scores
+0412: 
+0413: 
+0414: def simple_text_mood(text: str) -&gt; str:
+0415:     lower = text.lower()
+0416:     if any(t in lower for t in (&quot;sad&quot;, &quot;lonely&quot;, &quot;cry&quot;, &quot;hurt&quot;, &quot;grief&quot;)):
+0417:         return &quot;sad&quot;
+0418:     if any(t in lower for t in (&quot;happy&quot;, &quot;joy&quot;, &quot;love&quot;, &quot;great&quot;, &quot;awesome&quot;)):
+0419:         return &quot;happy&quot;
+0420:     if any(t in lower for t in (&quot;angry&quot;, &quot;mad&quot;, &quot;stress&quot;, &quot;frustrat&quot;, &quot;rage&quot;)):
+0421:         return &quot;energetic&quot;
+0422:     return &quot;calm&quot;
+0423: 
+0424: 
+0425: def analyze_text(text: str) -&gt; dict[str, Any]:
+0426:     text = (text or &quot;&quot;).strip()
+0427:     if not text:
+0428:         return {&quot;text&quot;: &quot;&quot;, &quot;mood&quot;: &quot;calm&quot;, &quot;confidence&quot;: 0.5, &quot;emotion_label&quot;: &quot;neutral&quot;,
+0429:                 &quot;emotion_score&quot;: 0.5, &quot;sentiment_label&quot;: &quot;NEUTRAL&quot;, &quot;sentiment_score&quot;: 0.5,
+0430:                 &quot;intent&quot;: &quot;general_support&quot;, &quot;matched_terms&quot;: [], &quot;synonyms_preview&quot;: [],
+0431:                 &quot;mood_scores&quot;: {m: 0.0 for m in MOOD_CHOICES}, &quot;method&quot;: &quot;empty_text&quot;}
+0432:     mood_scores = {m: 0.0 for m in MOOD_CHOICES}
+0433:     emotion_label, emotion_score, emotion_all = classify_text(TEXT_EMOTION_MODEL, text)
+0434:     sentiment_label, sentiment_score, _ = classify_text(TEXT_SENTIMENT_MODEL, text)
+0435:     if emotion_all:
+0436:         for label, score in emotion_all.items():
+0437:             mood_scores[normalize_label_to_mood(label)] += float(score)
+0438:         method = &quot;transformers&quot;
+0439:     else:
+0440:         emotion_label, emotion_score, method = simple_text_mood(text), 0.55, &quot;heuristic&quot;
+0441:         mood_scores[emotion_label] = 1.0
+0442:     sentiment_label = sentiment_label.upper() if sentiment_label else &quot;NEUTRAL&quot;</pre><footer><span>DEPARTMENT OF AIML</span><span>98</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 14</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0443:     sentiment_score = sentiment_score or 0.5
+0444:     if sentiment_label.startswith(&quot;NEG&quot;):
+0445:         mood_scores[&quot;sad&quot;] += 0.12
+0446:     if sentiment_label.startswith(&quot;POS&quot;):
+0447:         mood_scores[&quot;happy&quot;] += 0.12
+0448:     intent = infer_intent(text)
+0449:     mood = max(mood_scores.items(), key=lambda p: p[1])[0]
+0450:     return {&quot;text&quot;: text, &quot;mood&quot;: mood, &quot;confidence&quot;: float(max(max(mood_scores.values()), emotion_score, sentiment_score)),
+0451:             &quot;emotion_label&quot;: emotion_label or &quot;neutral&quot;, &quot;emotion_score&quot;: float(emotion_score),
+0452:             &quot;sentiment_label&quot;: sentiment_label, &quot;sentiment_score&quot;: float(sentiment_score),
+0453:             &quot;intent&quot;: intent[&quot;intent&quot;], &quot;matched_terms&quot;: intent[&quot;matched_terms&quot;],
+0454:             &quot;synonyms_preview&quot;: intent[&quot;synonyms_preview&quot;], &quot;mood_scores&quot;: mood_scores, &quot;method&quot;: method}
+0455: 
+0456: 
+0457: def transcribe_audio(audio_bytes: bytes | None) -&gt; tuple[str, str]:
+0458:     if not audio_bytes:
+0459:         return &quot;&quot;, &quot;no_audio&quot;
+0460:     if sr is None:
+0461:         return &quot;&quot;, &quot;speechrecognition_missing&quot;
+0462:     recognizer = sr.Recognizer()
+0463:     try:
+0464:         with sr.AudioFile(io.BytesIO(audio_bytes)) as source:
+0465:             audio = recognizer.record(source)
+0466:         return recognizer.recognize_google(audio).strip(), &quot;google_web_speech&quot;
+0467:     except Exception:
+0468:         return &quot;&quot;, &quot;transcription_failed&quot;
+0469: 
+0470: 
+0471: def wav_energy(audio_bytes: bytes | None) -&gt; float:
+0472:     if not audio_bytes:
+0473:         return 0.0
+0474:     try:
+0475:         with wave.open(io.BytesIO(audio_bytes), &quot;rb&quot;) as wf:
+0476:             frames = wf.readframes(wf.getnframes())</pre><footer><span>DEPARTMENT OF AIML</span><span>99</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 15</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0477:             sample_width = wf.getsampwidth()
+0478:             channels = wf.getnchannels()
+0479:         if sample_width == 1:
+0480:             data = np.frombuffer(frames, dtype=np.uint8).astype(np.float32) - 128.0
+0481:             max_abs = 128.0
+0482:         elif sample_width == 2:
+0483:             data = np.frombuffer(frames, dtype=np.int16).astype(np.float32)
+0484:             max_abs = 32768.0
+0485:         else:
+0486:             return 0.0
+0487:         if channels &gt; 1:
+0488:             data = data.reshape(-1, channels).mean(axis=1)
+0489:         return float(np.mean(np.abs(data)) / max_abs)
+0490:     except Exception:
+0491:         return 0.0
+0492: 
+0493: 
+0494: def analyze_voice(audio_bytes: bytes | None, username: str) -&gt; dict[str, Any]:
+0495:     transcript, method = transcribe_audio(audio_bytes)
+0496:     text_result = analyze_text(transcript) if transcript else analyze_text(&quot;&quot;)
+0497:     scores = dict(text_result[&quot;mood_scores&quot;])
+0498:     energy = wav_energy(audio_bytes)
+0499:     if energy &gt; 0.14:
+0500:         scores[&quot;energetic&quot;] += 0.15
+0501:     if energy &lt; 0.04:
+0502:         scores[&quot;calm&quot;] += 0.08
+0503:     mood = max(scores.items(), key=lambda p: p[1])[0]
+0504:     return {&quot;transcript&quot;: transcript, &quot;transcription_method&quot;: method, &quot;energy&quot;: energy, &quot;mood&quot;: mood,
+0505:             &quot;confidence&quot;: float(max(scores.values()) if scores else 0.0),
+0506:             &quot;spoken_name_detected&quot;: bool(username and transcript and username.lower() in transcript.lower()),
+0507:             &quot;text_result&quot;: text_result}
+0508: 
+0509: 
+0510: @lru_cache(maxsize=1)</pre><footer><span>DEPARTMENT OF AIML</span><span>100</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 16</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0511: def face_cascade():
+0512:     if cv2 is None:
+0513:         return None
+0514:     cascade = cv2.CascadeClassifier(cv2.data.haarcascades + &quot;haarcascade_frontalface_default.xml&quot;)
+0515:     return cascade if not cascade.empty() else None
+0516: 
+0517: 
+0518: @lru_cache(maxsize=1)
+0519: def smile_cascade():
+0520:     if cv2 is None:
+0521:         return None
+0522:     cascade = cv2.CascadeClassifier(cv2.data.haarcascades + &quot;haarcascade_smile.xml&quot;)
+0523:     return cascade if not cascade.empty() else None
+0524: 
+0525: 
+0526: def decode_image(image_bytes: bytes | None) -&gt; np.ndarray | None:
+0527:     if not image_bytes or cv2 is None:
+0528:         return None
+0529:     return cv2.imdecode(np.frombuffer(image_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
+0530: 
+0531: 
+0532: def largest_face_box(image_bgr: np.ndarray):
+0533:     cascade = face_cascade()
+0534:     if cascade is None or cv2 is None:
+0535:         return None
+0536:     gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+0537:     faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+0538:     return None if len(faces) == 0 else max(faces, key=lambda b: int(b[2] * b[3]))
+0539: 
+0540: 
+0541: def heuristic_face_label(face_bgr: np.ndarray) -&gt; tuple[str, float]:
+0542:     if cv2 is None:
+0543:         return &quot;neutral&quot;, 0.40
+0544:     gray = cv2.cvtColor(face_bgr, cv2.COLOR_BGR2GRAY)</pre><footer><span>DEPARTMENT OF AIML</span><span>101</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 17</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0545:     brightness = float(gray.mean())
+0546:     texture = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+0547:     smiles = []
+0548:     sc = smile_cascade()
+0549:     if sc is not None:
+0550:         try:
+0551:             smiles = sc.detectMultiScale(gray, scaleFactor=1.7, minNeighbors=20, minSize=(25, 25))
+0552:         except Exception:
+0553:             smiles = []
+0554:     if len(smiles) &gt; 0 or brightness &gt; 150:
+0555:         return &quot;happy&quot;, 0.58
+0556:     if texture &gt; 450 and brightness &lt; 130:
+0557:         return &quot;angry&quot;, 0.47
+0558:     if brightness &lt; 95:
+0559:         return &quot;sad&quot;, 0.46
+0560:     return &quot;neutral&quot;, 0.44
+0561: 
+0562: 
+0563: def image_to_tensor(image_rgb: np.ndarray) -&gt; Any:
+0564:     if not TORCH_AVAILABLE or cv2 is None:
+0565:         return None
+0566:     resized = cv2.resize(image_rgb, (224, 224), interpolation=cv2.INTER_AREA).astype(np.float32) / 255.0
+0567:     mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+0568:     std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+0569:     arr = np.transpose((resized - mean) / std, (2, 0, 1))
+0570:     return torch.from_numpy(arr).unsqueeze(0).float()
+0571: 
+0572: 
+0573: def build_model(num_classes: int, pretrained: bool = True):
+0574:     if not TORCH_AVAILABLE:
+0575:         return None
+0576:     try:
+0577:         weights = EfficientNet_V2_S_Weights.DEFAULT if pretrained else None
+0578:         model = efficientnet_v2_s(weights=weights)</pre><footer><span>DEPARTMENT OF AIML</span><span>102</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 18</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0579:     except Exception:
+0580:         model = efficientnet_v2_s(weights=None)
+0581:     in_features = model.classifier[1].in_features
+0582:     model.classifier = nn.Sequential(nn.Dropout(p=0.30), nn.Linear(in_features, num_classes))
+0583:     return model
+0584: 
+0585: 
+0586: def save_checkpoint(model: Any, class_names: list[str], extra: dict[str, Any] | None = None) -&gt; None:
+0587:     if not TORCH_AVAILABLE:
+0588:         return
+0589:     MODEL_DIR.mkdir(parents=True, exist_ok=True)
+0590:     payload = {&quot;architecture&quot;: &quot;efficientnet_v2_s&quot;, &quot;class_names&quot;: class_names,
+0591:                &quot;model_state_dict&quot;: model.state_dict(), &quot;saved_at_utc&quot;: utc_now()}
+0592:     if extra:
+0593:         payload.update(extra)
+0594:     torch.save(payload, MODEL_PATH)
+0595:     MODEL_META_PATH.write_text(json.dumps({k: v for k, v in payload.items() if k != &quot;model_state_dict&quot;}, indent=2), encoding=&quot;utf-8&quot;)
+0596: 
+0597: 
+0598: @lru_cache(maxsize=1)
+0599: def load_checkpoint():
+0600:     if not TORCH_AVAILABLE or not MODEL_PATH.exists():
+0601:         return None, {}
+0602:     try:
+0603:         checkpoint = torch.load(MODEL_PATH, map_location=&quot;cpu&quot;)
+0604:         classes = checkpoint.get(&quot;class_names&quot;) or DEFAULT_FACE_CLASSES
+0605:         model = build_model(len(classes), pretrained=False)
+0606:         model.load_state_dict(checkpoint[&quot;model_state_dict&quot;], strict=False)
+0607:         model.eval()
+0608:         return model, {&quot;class_names&quot;: classes}
+0609:     except Exception:
+0610:         return None, {}
+0611: 
+0612: </pre><footer><span>DEPARTMENT OF AIML</span><span>103</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 19</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0613: def last_conv_module(model: Any):
+0614:     if model is None:
+0615:         return None
+0616:     last = None
+0617:     for module in model.modules():
+0618:         if TORCH_AVAILABLE and isinstance(module, nn.Conv2d):
+0619:             last = module
+0620:     return last
+0621: 
+0622: 
+0623: def gradcam_heatmap(model: Any, tensor: Any, target_index: int | None = None) -&gt; np.ndarray | None:
+0624:     if not TORCH_AVAILABLE or model is None or tensor is None:
+0625:         return None
+0626:     layer = last_conv_module(model)
+0627:     if layer is None:
+0628:         return None
+0629:     activations, gradients = [], []
+0630:     f_handle = layer.register_forward_hook(lambda _m, _i, out: activations.append(out.detach()))
+0631:     b_handle = layer.register_full_backward_hook(lambda _m, _gin, gout: gradients.append(gout[0].detach()))
+0632:     try:
+0633:         model.zero_grad(set_to_none=True)
+0634:         logits = model(tensor)
+0635:         if target_index is None:
+0636:             target_index = int(torch.argmax(logits, dim=1).item())
+0637:         logits[:, target_index].sum().backward()
+0638:         acts, grads = activations[-1][0], gradients[-1][0]
+0639:         weights = grads.mean(dim=(1, 2))
+0640:         cam = torch.relu((weights[:, None, None] * acts).sum(dim=0))
+0641:         if float(cam.max()) &lt;= 0:
+0642:             return None
+0643:         return np.uint8(255 * (cam / cam.max()).cpu().numpy())
+0644:     except Exception:
+0645:         return None
+0646:     finally:</pre><footer><span>DEPARTMENT OF AIML</span><span>104</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 20</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0647:         f_handle.remove()
+0648:         b_handle.remove()
+0649: 
+0650: 
+0651: def overlay_heatmap(face_bgr: np.ndarray, heatmap: np.ndarray | None) -&gt; np.ndarray | None:
+0652:     if cv2 is None or heatmap is None:
+0653:         return None
+0654:     heatmap = cv2.resize(heatmap, (face_bgr.shape[1], face_bgr.shape[0]))
+0655:     colored = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+0656:     return cv2.addWeighted(colored, 0.35, face_bgr, 0.65, 0.0)
+0657: 
+0658: 
+0659: def predict_face(image_bytes: bytes | None) -&gt; dict[str, Any]:
+0660:     image = decode_image(image_bytes)
+0661:     if image is None or cv2 is None:
+0662:         return {&quot;label&quot;: &quot;neutral&quot;, &quot;mood&quot;: &quot;calm&quot;, &quot;confidence&quot;: 0.0, &quot;method&quot;: &quot;no_image&quot;,
+0663:                 &quot;overlay_rgb&quot;: None, &quot;face_found&quot;: False}
+0664:     box = largest_face_box(image)
+0665:     display = image.copy()
+0666:     if box is None:
+0667:         x, y, w, h = 0, 0, image.shape[1], image.shape[0]
+0668:         face = image
+0669:     else:
+0670:         x, y, w, h = map(int, box)
+0671:         face = image[y:y + h, x:x + w]
+0672:         cv2.rectangle(display, (x, y), (x + w, y + h), (70, 255, 140), 2)
+0673:     model, meta = load_checkpoint()
+0674:     if model is not None:
+0675:         try:
+0676:             tensor = image_to_tensor(cv2.cvtColor(face, cv2.COLOR_BGR2RGB))
+0677:             probs = torch.softmax(model(tensor), dim=1)[0].detach().cpu().numpy()
+0678:             classes = meta.get(&quot;class_names&quot;) or DEFAULT_FACE_CLASSES
+0679:             idx = int(np.argmax(probs))
+0680:             label = classes[idx] if idx &lt; len(classes) else f&quot;class_{idx}&quot;</pre><footer><span>DEPARTMENT OF AIML</span><span>105</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 21</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0681:             overlay = overlay_heatmap(face, gradcam_heatmap(model, tensor, idx))
+0682:             if overlay is not None and box is not None:
+0683:                 display[y:y + h, x:x + w] = cv2.resize(overlay, (w, h))
+0684:             return {&quot;label&quot;: label, &quot;mood&quot;: normalize_label_to_mood(label), &quot;confidence&quot;: float(probs[idx]),
+0685:                     &quot;method&quot;: &quot;trained_efficientnet_v2_s&quot;, &quot;overlay_rgb&quot;: cv2.cvtColor(display, cv2.COLOR_BGR2RGB),
+0686:                     &quot;face_found&quot;: box is not None}
+0687:         except Exception:
+0688:             pass
+0689:     label, confidence = heuristic_face_label(face)
+0690:     return {&quot;label&quot;: label, &quot;mood&quot;: normalize_label_to_mood(label), &quot;confidence&quot;: confidence,
+0691:             &quot;method&quot;: &quot;opencv_heuristic&quot;, &quot;overlay_rgb&quot;: cv2.cvtColor(display, cv2.COLOR_BGR2RGB),
+0692:             &quot;face_found&quot;: box is not None}
+0693: 
+0694: 
+0695: class FolderDataset(Dataset):
+0696:     def __init__(self, root: Path, class_to_idx: dict[str, int] | None = None, train: bool = False):
+0697:         self.root = root
+0698:         self.train = train
+0699:         classes = sorted(p.name for p in root.iterdir() if p.is_dir()) if root.exists() else []
+0700:         self.class_to_idx = class_to_idx or {name: i for i, name in enumerate(classes)}
+0701:         self.samples: list[tuple[Path, int]] = []
+0702:         for name, idx in self.class_to_idx.items():
+0703:             for fp in (root / name).rglob(&quot;*&quot;) if (root / name).exists() else []:
+0704:                 if fp.is_file() and fp.suffix.lower() in IMAGE_EXTENSIONS:
+0705:                     self.samples.append((fp, idx))
+0706: 
+0707:     def __len__(self) -&gt; int:
+0708:         return len(self.samples)
+0709: 
+0710:     def __getitem__(self, index: int):
+0711:         path, label = self.samples[index]
+0712:         image = cv2.imread(str(path)) if cv2 is not None else None
+0713:         if image is None:
+0714:             image = np.zeros((224, 224, 3), dtype=np.uint8)</pre><footer><span>DEPARTMENT OF AIML</span><span>106</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 22</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0715:         rgb = cv2.cvtColor(cv2.resize(image, (224, 224)), cv2.COLOR_BGR2RGB)
+0716:         if self.train and random.random() &lt; 0.5:
+0717:             rgb = cv2.flip(rgb, 1)
+0718:         tensor = image_to_tensor(rgb)[0]
+0719:         return tensor, torch.tensor(label, dtype=torch.long)
+0720: 
+0721: 
+0722: def dataset_has_images(split_dir: Path) -&gt; bool:
+0723:     return split_dir.exists() and any(p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS for p in split_dir.rglob(&quot;*&quot;))
+0724: 
+0725: 
+0726: def dataset_summary(root: Path = DATASET_DIR) -&gt; list[dict[str, Any]]:
+0727:     rows: list[dict[str, Any]] = []
+0728:     for split in (&quot;train&quot;, &quot;val&quot;, &quot;test&quot;):
+0729:         split_dir = root / split
+0730:         if split_dir.exists():
+0731:             for class_dir in sorted(p for p in split_dir.iterdir() if p.is_dir()):
+0732:                 rows.append({&quot;split&quot;: split, &quot;class_name&quot;: class_dir.name,
+0733:                              &quot;count&quot;: sum(1 for f in class_dir.iterdir() if f.suffix.lower() in IMAGE_EXTENSIONS)})
+0734:     return rows
+0735: 
+0736: 
+0737: def build_loaders(dataset_root: Path, batch_size: int):
+0738:     if not TORCH_AVAILABLE or cv2 is None:
+0739:         raise RuntimeError(&quot;PyTorch and OpenCV are required for training.&quot;)
+0740:     if not dataset_has_images(dataset_root / &quot;train&quot;):
+0741:         raise RuntimeError(&quot;No images found in dataset/train.&quot;)
+0742:     train_ds = FolderDataset(dataset_root / &quot;train&quot;, train=True)
+0743:     val_ds = FolderDataset(dataset_root / &quot;val&quot;, class_to_idx=train_ds.class_to_idx) if dataset_has_images(dataset_root / &quot;val&quot;) else None
+0744:     test_ds = FolderDataset(dataset_root / &quot;test&quot;, class_to_idx=train_ds.class_to_idx) if dataset_has_images(dataset_root / &quot;test&quot;) else None
+0745:     return (DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=0),
+0746:             DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=0) if val_ds else None,
+0747:             DataLoader(test_ds, batch_size=batch_size, shuffle=False, num_workers=0) if test_ds else None,
+0748:             list(train_ds.class_to_idx.keys()))</pre><footer><span>DEPARTMENT OF AIML</span><span>107</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 23</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0749: 
+0750: 
+0751: def train_model(dataset_root: Path, batch_size: int, epochs: int, lr: float, freeze_backbone: bool, progress_callback=None):
+0752:     train_loader, val_loader, test_loader, class_names = build_loaders(dataset_root, batch_size)
+0753:     device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+0754:     model = build_model(len(class_names), pretrained=True).to(device)
+0755:     if freeze_backbone:
+0756:         for param in model.features.parameters():
+0757:             param.requires_grad = False
+0758:     optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=lr)
+0759:     criterion = nn.CrossEntropyLoss()
+0760:     history = []
+0761:     for epoch in range(1, epochs + 1):
+0762:         model.train()
+0763:         loss_sum = correct = total = 0
+0764:         for images, labels in train_loader:
+0765:             images, labels = images.to(device), labels.to(device)
+0766:             optimizer.zero_grad(set_to_none=True)
+0767:             logits = model(images)
+0768:             loss = criterion(logits, labels)
+0769:             loss.backward()
+0770:             optimizer.step()
+0771:             loss_sum += float(loss.item()) * labels.size(0)
+0772:             correct += int((torch.argmax(logits, dim=1) == labels).sum().item())
+0773:             total += int(labels.size(0))
+0774:         row = {&quot;epoch&quot;: float(epoch), &quot;train_loss&quot;: round(loss_sum / max(total, 1), 4),
+0775:                &quot;train_accuracy&quot;: round(correct / max(total, 1), 4)}
+0776:         history.append(row)
+0777:         if progress_callback:
+0778:             progress_callback(epoch / epochs, row)
+0779:     save_checkpoint(model.cpu(), class_names, {&quot;epochs&quot;: epochs, &quot;batch_size&quot;: batch_size, &quot;learning_rate&quot;: lr})
+0780:     load_checkpoint.cache_clear()
+0781:     return history, {&quot;message&quot;: &quot;Training complete; evaluate using validation or test dataset.&quot;}, class_names
+0782: </pre><footer><span>DEPARTMENT OF AIML</span><span>108</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 24</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0783: 
+0784: def fuse_emotions(face_result: dict[str, Any], voice_result: dict[str, Any], text_result: dict[str, Any], emoji_mood: str):
+0785:     scores = {m: 0.0 for m in MOOD_CHOICES}
+0786:     scores[face_result.get(&quot;mood&quot;, &quot;calm&quot;)] += 0.35 * max(float(face_result.get(&quot;confidence&quot;) or 0.45), 0.30)
+0787:     scores[voice_result.get(&quot;mood&quot;, &quot;calm&quot;)] += 0.25 * max(float(voice_result.get(&quot;confidence&quot;) or 0.45), 0.30)
+0788:     scores[text_result.get(&quot;mood&quot;, &quot;calm&quot;)] += 0.25 * max(float(text_result.get(&quot;confidence&quot;) or 0.45), 0.30)
+0789:     scores[emoji_mood] += 0.15
+0790:     fused = max(scores.items(), key=lambda p: p[1])[0]
+0791:     return fused, scores, float(scores[fused] / (sum(scores.values()) or 1.0))
+0792: 
+0793: 
+0794: def ethical_report(face_result: dict[str, Any], voice_result: dict[str, Any], text_result: dict[str, Any], scores: dict[str, float]):
+0795:     warnings = [&quot;This assistant provides supportive guidance, not medical diagnosis.&quot;]
+0796:     modalities = int(face_result.get(&quot;method&quot;) != &quot;no_image&quot;) + int(bool(voice_result.get(&quot;transcript&quot;))) + int(bool(text_result.get(&quot;text&quot;)))
+0797:     if face_result.get(&quot;method&quot;) == &quot;opencv_heuristic&quot;:
+0798:         warnings.append(&quot;Face analysis is in heuristic fallback mode until a .pth model is trained.&quot;)
+0799:     if modalities &lt; 2:
+0800:         warnings.append(&quot;Fusion is stronger when at least two modalities are provided.&quot;)
+0801:     maximum = max(scores.values()) if scores else 0.0
+0802:     band = &quot;High&quot; if maximum &gt;= 0.45 else &quot;Medium&quot; if maximum &gt;= 0.28 else &quot;Low&quot;
+0803:     return {&quot;modalities_used&quot;: modalities, &quot;confidence_band&quot;: band, &quot;warnings&quot;: warnings}
+0804: 
+0805: 
+0806: def build_system_prompt(username: str, mood: str, tone_mode: str, summary: str, intent: str, snapshot: str) -&gt; str:
+0807:     return textwrap.dedent(f&quot;&quot;&quot;
+0808:     You are an emotionally intelligent therapeutic chatbot and animated mascot.
+0809:     User name: {username}
+0810:     Current fused mood: {mood}
+0811:     Tone mode: {tone_mode}
+0812:     Tone guide: {TONE_GUIDES.get(tone_mode, TONE_GUIDES[&#x27;Therapist&#x27;])}
+0813:     Detected intent: {intent}
+0814:     Digital twin summary: {summary}
+0815:     Emotion snapshot: {snapshot}
+0816:     Give one supportive reflection, exactly three reflective questions, and one practical action.</pre><footer><span>DEPARTMENT OF AIML</span><span>109</span></footer></section><section class="page"><h1>Appendix A: Source Code Listing Page 25</h1><p>File: app.py</p><p>The following listing is part of the complete single-file implementation supplied with this report.</p><pre>0817:     Do not diagnose disease or claim certainty.
+0818:     &quot;&quot;&quot;).strip()
+0819: 
+0820: 
+0821: def huggingface_chat(system_prompt: str, user_prompt: str) -&gt; str | None:
+0822:     if not HF_TOKEN:
+0823:         return None
+0824:     payload = {&quot;inputs&quot;: f&quot;System:\n{system_prompt}\n\nUser:\n{user_prompt}\n\nAssistant:\n&quot;,
+0825:                &quot;parameters&quot;: {&quot;max_new_tokens&quot;: 220, &quot;temperature&quot;: 0.7, &quot;top_p&quot;: 0.9, &quot;return_full_text&quot;: False},
+0826:                &quot;options&quot;: {&quot;wait_for_model&quot;: True}}
+0827:     request = urllib.request.Request(
+0828:         f&quot;https://api-inference.huggingface.co/models/{HF_CHAT_MODEL}&quot;,
+0829:         data=json.dumps(payload).encode(&quot;utf-8&quot;),
+0830:         headers={&quot;Authorization&quot;: f&quot;Bearer {HF_TOKEN}&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;},
+0831:         method=&quot;POST&quot;,
+0832:     )
+0833:     try:
+0834:         with urllib.request.urlopen(request, timeout=90) as response:
+0835:             parsed = json.loads(response.read().decode(&quot;utf-8&quot;))
+0836:     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, Exception):
+0837:         return None
+0838:     if isinstance(parsed, list) and parsed and isinstance(parsed[0], dict):
+0839:         return str(parsed[0].get(&quot;generated_text&quot;, &quot;&quot;)).strip() or None
+0840:     if isinstance(parsed, dict):
+0841:         return str(parsed.get(&quot;generated_text&quot;, &quot;&quot;)).strip() or None
+0842:     return None
+0843: 
+0844: 
+0845: def local_coach(question: str, mood: str, tone_mode: str, summary: str, intent: str) -&gt; str:
+0846:     questions = MOOD_QUESTION_BANK.get(mood, MOOD_QUESTION_BANK[&quot;calm&quot;])
+0847:     opener = {&quot;Therapist&quot;: &quot;I hear you, and I want to respond thoughtfully.&quot;,
+0848:               &quot;Friendly&quot;: &quot;I am with you, and we can handle this together.&quot;,
+0849:               &quot;Motivational&quot;: &quot;You are capable, and we can turn this into action right now.&quot;}.get(tone_mode, &quot;I am here.&quot;)
+0850:     return textwrap.dedent(f&quot;&quot;&quot;</pre><footer><span>DEPARTMENT OF AIML</span><span>110</span></footer></section><section class="page"><h1>Appendix B: Requirements File</h1><p>requirements.txt</p><pre>streamlit
+torch
+torchvision
+transformers
+opencv-python
+numpy
+nltk
+SpeechRecognition
+pyttsx3</pre><footer><span>DEPARTMENT OF AIML</span><span>111</span></footer></section><section class="page"><h1>Appendix C: Dataset Folder Structure</h1><p>dataset/train/happy, dataset/train/sad, dataset/train/angry, dataset/train/neutral</p><p>dataset/val/happy, dataset/val/sad, dataset/val/angry, dataset/val/neutral</p><p>dataset/test/happy, dataset/test/sad, dataset/test/angry, dataset/test/neutral</p><footer><span>DEPARTMENT OF AIML</span><span>112</span></footer></section><section class="page"><h1>Appendix D: Screenshot Checklist</h1><p>Capture these screenshots after running the application: home screen, live analysis, face Grad-CAM, mascot chat, training tab, twin memory table, setup guide and resource catalog download.</p><footer><span>DEPARTMENT OF AIML</span><span>113</span></footer></section></body></html>
