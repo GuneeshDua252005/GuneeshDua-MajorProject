@@ -625,6 +625,13 @@ def styles_xml() -> str:
 
 
 def write_docx(pages: list[Page]) -> None:
+    def add_xml(zf: zipfile.ZipFile, name: str, data: str) -> None:
+        info = zipfile.ZipInfo(name)
+        info.date_time = (2026, 1, 1, 0, 0, 0)
+        info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = 0o644 << 16
+        zf.writestr(info, data)
+
     content_types = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
@@ -652,14 +659,14 @@ def write_docx(pages: list[Page]) -> None:
     )
     settings = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:updateFields w:val="true"/></w:settings>'
     with zipfile.ZipFile(DOCX_PATH, "w", zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("[Content_Types].xml", content_types)
-        zf.writestr("_rels/.rels", rels)
-        zf.writestr("word/_rels/document.xml.rels", doc_rels)
-        zf.writestr("word/document.xml", document_xml(pages))
-        zf.writestr("word/styles.xml", styles_xml())
-        zf.writestr("word/settings.xml", settings)
-        zf.writestr("word/footerRoman.xml", footer_xml("roman"))
-        zf.writestr("word/footerDecimal.xml", footer_xml("decimal"))
+        add_xml(zf, "[Content_Types].xml", content_types)
+        add_xml(zf, "_rels/.rels", rels)
+        add_xml(zf, "word/_rels/document.xml.rels", doc_rels)
+        add_xml(zf, "word/document.xml", document_xml(pages))
+        add_xml(zf, "word/styles.xml", styles_xml())
+        add_xml(zf, "word/settings.xml", settings)
+        add_xml(zf, "word/footerRoman.xml", footer_xml("roman"))
+        add_xml(zf, "word/footerDecimal.xml", footer_xml("decimal"))
 
 
 def write_markdown(pages: list[Page]) -> None:
