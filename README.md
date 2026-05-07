@@ -24,7 +24,7 @@ twin analytics, and ethical lightweight AI design.
 ## Run the prototype
 
 ```bash
-python run_system.py \
+python3 run_system.py \
   --user-id student-1 \
   --emoji stressed \
   --voice-text "I feel pressure and deadline stress" \
@@ -46,7 +46,7 @@ The command prints:
 ## Run tests
 
 ```bash
-python -m unittest discover -s tests
+python3 -m unittest discover -s tests
 ```
 
 ## Architecture

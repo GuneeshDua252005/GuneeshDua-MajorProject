@@ -782,8 +782,9 @@ class CognitiveEmotionSystem:
 
     @property
     def records(self) -> list[InteractionRecord]:
-        persisted = self.storage.load() if isinstance(self.storage, JsonlStorage) else []
-        return [*persisted, *self._session_records]
+        if isinstance(self.storage, JsonlStorage):
+            return self.storage.load()
+        return list(self._session_records)
 
     def submit_feedback(
         self,
