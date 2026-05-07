@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cognitive-emotion-system"
+version = "0.1.0"
+description = "Lightweight cognitive emotion intelligence and adaptive lifestyle research prototype."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Guneesh Dua" }]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
