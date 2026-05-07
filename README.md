@@ -20,6 +20,8 @@ twin analytics, and ethical lightweight AI design.
 - JSONL storage by default and optional Excel `.xlsx` storage with OpenPyXL.
 - Chapter 4 architecture and workflow flowcharts in
   [`docs/architecture.md`](docs/architecture.md).
+- Downloadable Word document containing the workflow architecture models:
+  [`docs/chapter4_workflow_architecture_models.docx`](docs/chapter4_workflow_architecture_models.docx).
 
 ## Run the prototype
 
@@ -62,3 +64,6 @@ methodology, system implementation architecture, and Mermaid flowcharts for:
 - emotional digital twin modeling
 - gesture recognition workflow
 - data analytics and weekly reporting
+
+Download the Word version here:
+[`chapter4_workflow_architecture_models.docx`](docs/chapter4_workflow_architecture_models.docx).

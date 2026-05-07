@@ -7,6 +7,9 @@ modular workflow: multimodal emotion capture, preprocessing, weighted fusion,
 adaptive recommendation, feedback learning, digital twin profiling, analytics,
 and wellness reporting.
 
+Downloadable Word version:
+[`chapter4_workflow_architecture_models.docx`](chapter4_workflow_architecture_models.docx).
+
 ## 4.1 Methodology Used
 
 The system is implementation-oriented and modular. Each modality is processed by
