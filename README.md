@@ -15,6 +15,8 @@ Cognitive Emotion Intelligence & Adaptive Lifestyle System (lightweight implemen
 - `emotion_adaptive_system.py` - Main implementation and CLI runner
 - `dashboard.py` - Streamlit analytics dashboard
 - `docs/workflow_architecture.md` - Flowchart architecture (Mermaid)
+- `docs/Cognitive_Emotion_Workflow_Architecture_Models.docx` - Word document with workflow flowchart models
+- `scripts/generate_workflow_docx.py` - Generator script for the Word flowchart document
 - `requirements.txt` - Python dependencies
 
 ## Installation
@@ -69,6 +71,7 @@ By default, dashboard reads `emotion_logs.xlsx`.
 See:
 
 - [`docs/workflow_architecture.md`](docs/workflow_architecture.md)
+- [`docs/Cognitive_Emotion_Workflow_Architecture_Models.docx`](docs/Cognitive_Emotion_Workflow_Architecture_Models.docx)
 
 Included flowcharts:
 
@@ -76,3 +79,15 @@ Included flowcharts:
 2. Weighted emotion fusion model
 3. Reinforcement recommendation feedback loop
 4. Data collection and analysis pipeline
+
+## Word Document Download Reference Link
+
+After pushing this branch, download directly from:
+
+`https://github.com/GuneeshDua252005/GuneeshDua-MajorProject/raw/cursor/emotion-system-implementation-7db7/docs/Cognitive_Emotion_Workflow_Architecture_Models.docx`
+
+## Regenerate Word Document
+
+```bash
+python3 scripts/generate_workflow_docx.py
+```
