@@ -1,0 +1,14 @@
+streamlit
+torch
+torchvision
+numpy
+pandas
+pillow
+scikit-learn
+requests
+datasets
+matplotlib
+seaborn
+SpeechRecognition
+gTTS
+spotipy
