@@ -1,0 +1,23 @@
+# Python cache and virtual environments
+pycache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+ENV/
+
+# Streamlit and local runtime artifacts
+.streamlit/
+cei_twin_log.csv
+recommender_stats.csv
+resource_catalog.csv
+
+# Local models and datasets
+models/
+dataset/
